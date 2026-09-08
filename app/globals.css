@@ -455,3 +455,32 @@
     scroll-behavior: smooth;
   }
 }
+
+/* ═══════════════════════════════════════════
+   PRINT STYLES — Recibo Predial
+   ═══════════════════════════════════════════ */
+
+@media print {
+  aside,
+  header,
+  nav,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  #recibo-predial {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .rounded-2xl {
+    border-radius: 0.75rem;
+  }
+}
