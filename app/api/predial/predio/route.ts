@@ -69,36 +69,40 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // ── MOCK ──────────────────────────────────────────────
-    const predio = MOCK_PREDIOS[clave]
-    if (!predio) {
-      return NextResponse.json(
-        { error: 'No se encontró ningún predio con la clave catastral proporcionada.' },
-        { status: 404 }
-      )
-    }
-    return NextResponse.json({ predio })
-    // ── FIN MOCK ──────────────────────────────────────────
-
-    /* ── PRODUCCIÓN (descomentar cuando BD esté lista) ────
+    // ── PRODUCCIÓN (BD REAL) ──────────────────────────
     const { query } = await import('@/lib/db')
-    const rows = await query<Predio>(
-      `SELECT
-         clave, propietario, domicilio, colonia, municipio,
-         estado, cp, zona, superficie_terreno, superficie_construccion,
-         uso, valor_catastral
-       FROM predios
-       WHERE clave = ?`,
+    const rows = await query<any>(
+      `SELECT * FROM predio WHERE ClaveCatastral = ?`,
       [clave]
     )
+    
     if (rows.length === 0) {
       return NextResponse.json(
         { error: 'No se encontró ningún predio con la clave catastral proporcionada.' },
         { status: 404 }
       )
     }
-    return NextResponse.json({ predio: rows[0] })
-    ── FIN PRODUCCIÓN ──────────────────────────────────── */
+
+    const row = rows[0]
+    
+    // Mapeamos los datos reales a la interfaz Predio que espera el frontend
+    const predio: Predio = {
+      clave: row.ClaveCatastral,
+      propietario: row.nombreContribuyente,
+      domicilio: `${row.ubicacionPredio || ''} ${row.numeroExterior || ''} ${row.numeroInterior ? 'Int ' + row.numeroInterior : ''}`.trim(),
+      colonia: row.coloniaPredio || 'No especificada',
+      municipio: 'Tequisquiapan',
+      estado: 'Querétaro',
+      cp: '76750',
+      zona: 'Urbana',
+      superficie_terreno: 0,
+      superficie_construccion: 0,
+      uso: row.TipoContribucion === 'U' ? 'Urbano' : (row.TipoContribucion === 'R' ? 'Rústico' : 'No especificado'),
+      valor_catastral: row.total || 0,
+    }
+
+    return NextResponse.json({ predio })
+    // ── FIN PRODUCCIÓN ──────────────────────────────────
   } catch (err) {
     console.error('[API predial/predio]', err)
     return NextResponse.json(

@@ -123,22 +123,6 @@ export default function BusquedaPage() {
             </button>
           </form>
 
-          {/* Claves de prueba */}
-          <div className="border-t border-slate-100 pt-5">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Claves de prueba disponibles</p>
-            <div className="flex flex-wrap gap-2">
-              {['TEQ-001-001-001', 'TEQ-002-003-007'].map(demo => (
-                <button
-                  key={demo}
-                  onClick={() => setClave(demo)}
-                  type="button"
-                  className="text-xs font-mono px-3 py-1.5 bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 text-slate-600 hover:text-[#c5283d] rounded-lg transition-all duration-200"
-                >
-                  {demo}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </PredialLayout>
