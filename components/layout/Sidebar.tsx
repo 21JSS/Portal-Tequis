@@ -1,26 +1,36 @@
 'use client'
 
-import Link from "next/link"
+import React from 'react'
+import { User, LayoutGrid, CreditCard, Settings, LogOut } from "lucide-react"
 import { usePathname } from "next/navigation"
+import Link from "next/link"
 import { Libre_Caslon_Text } from "next/font/google"
-import {
-  User,
-  LayoutGrid,
-  CreditCard,
-  Settings,
-  LogOut
-} from "lucide-react"
+import { useAuth } from "@/lib/context/AuthContext"
+import { LoginForm } from "@/components/auth/LoginForm"
 
 const libreCaslon = Libre_Caslon_Text({ weight: ["400", "700"], subsets: ["latin"] })
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { isAuthenticated, logout } = useAuth()
+
+  if (!isAuthenticated) {
+    return (
+      <aside className="fixed inset-0 bg-gradient-to-b from-[#b1193f] to-[#8e1432] z-50 flex flex-col items-center justify-center px-6 transition-all duration-700 ease-in-out animate-in slide-in-from-left duration-1000">
+        <LoginForm />
+      </aside>
+    )
+  }
 
   return (
-    <aside className="w-[88px] bg-gradient-to-b from-[#b1193f] to-[#8e1432] h-screen sticky top-0 flex flex-col items-center py-6 shadow-xl z-20">
+    <aside className="w-[88px] bg-gradient-to-b from-[#b1193f] to-[#8e1432] h-screen sticky top-0 flex flex-col items-center py-6 shadow-xl z-20 transition-all duration-500">
       {/* Logo */}
       <div className="flex flex-col items-center justify-center mb-6 w-full px-1 mt-3 animate-fade-in-up">
-        <img src="/Tequisquiapan-Presidencia.svg" alt="Tequisquiapan" className="w-[76px] scale-275 h-auto drop-shadow-md mb-1" />
+        <img 
+          src="/Tequisquiapan-Presidencia-2.svg" 
+          alt="Tequisquiapan" 
+          className="w-[50px] h-auto drop-shadow-md mb-1 transition-all brightness-0 invert" 
+        />
         <span className={`text-[10px] font-bold tracking-wider text-white/90 -mt-0.5 ${libreCaslon.className}`}>Tequisquiapan</span>
       </div>
 
@@ -45,16 +55,28 @@ export function Sidebar() {
       <div className="mt-auto flex flex-col gap-2 w-full px-3">
         <div className="w-10 h-px bg-white/20 mx-auto mb-2" />
         <NavItem href="#" icon={Settings} label="Ajustes" isActive={false} />
-        <NavItem href="#" icon={LogOut} label="Salir" isActive={false} />
+        <NavItem 
+          href="#" 
+          icon={LogOut} 
+          label="Salir" 
+          isActive={false} 
+          onClick={logout}
+        />
       </div>
     </aside>
   )
 }
 
-function NavItem({ icon: Icon, isActive, href, label }: { icon: any, isActive: boolean, href: string, label: string }) {
+function NavItem({ icon: Icon, isActive, href, label, onClick }: { icon: any, isActive: boolean, href: string, label: string, onClick?: () => void }) {
   return (
     <Link
       href={href}
+      onClick={(e) => {
+        if (onClick) {
+          e.preventDefault()
+          onClick()
+        }
+      }}
       className={`sidebar-nav-item w-full aspect-square flex items-center justify-center rounded-xl transition-all duration-300 relative ${isActive
         ? 'bg-white/20 text-white shadow-lg shadow-black/10'
         : 'text-white/60 hover:bg-white/10 hover:text-white'

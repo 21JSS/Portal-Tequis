@@ -1,7 +1,14 @@
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"
+import { useAuth } from "@/lib/context/AuthContext"
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <Sidebar />
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-50/80 bg-dot-pattern">
       <Sidebar />

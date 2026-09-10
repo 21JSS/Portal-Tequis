@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       `SELECT * FROM predio WHERE ClaveCatastral = ?`,
       [clave]
     )
-    
+
     if (rows.length === 0) {
       return NextResponse.json(
         { error: 'No se encontró ningún predio con la clave catastral proporcionada.' },
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     }
 
     const row = rows[0]
-    
+
     // Mapeamos los datos reales a la interfaz Predio que espera el frontend
     const predio: Predio = {
       clave: row.ClaveCatastral,
