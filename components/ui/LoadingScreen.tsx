@@ -9,7 +9,7 @@ export function LoadingScreen() {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-600/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-700/30 backdrop-blur-sm"
     >
       <div className="relative flex items-center justify-center">
         {/* 3D Coin Flipper Container */}
