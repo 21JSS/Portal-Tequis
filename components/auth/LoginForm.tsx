@@ -1,25 +1,37 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Mail, Lock } from "lucide-react"
 import { useAuth } from "@/lib/context/AuthContext"
-import { Libre_Caslon_Text } from "next/font/google"
-
-const libreCaslon = Libre_Caslon_Text({ weight: ["400", "700"], subsets: ["latin"] })
+import { motion, AnimatePresence } from 'framer-motion'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
 export function LoginForm() {
   const { login } = useAuth()
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+
+  const handleLogin = async () => {
+    setIsLoggingIn(true)
+    // Simulamos una petición al servidor
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    login()
+    setIsLoggingIn(false)
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto">
+    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto relative">
+      <AnimatePresence>
+        {isLoggingIn && <LoadingScreen />}
+      </AnimatePresence>
+
       {/* Logo Muy Grande y Centrado */}
       <div className="flex flex-col items-center justify-center mb-12 w-full animate-in fade-in zoom-in-90 duration-1000 delay-300">
         <img
           src="/Tequisquiapan-Presidencia-2.svg"
           alt="Tequisquiapan"
-          className="w-30 h-auto drop-shadow-2xl mb-0 transition-transform duration-700 brightness-0 invert"
+          className="w-32 h-auto drop-shadow-2xl mb-3 transition-transform duration-700 brightness-0 invert"
         />
-        <span className={`text-4xl font-bold tracking-widest text-white/90 mt-2 ${libreCaslon.className}`}>
+        <span className={`text-2xl font-bold tracking-widest text-white/90 -mt-0.5 font-sans`}>
           Tequisquiapan
         </span>
       </div>
@@ -52,10 +64,11 @@ export function LoginForm() {
           </div>
 
           <button
-            onClick={login}
-            className="w-full bg-white text-[#8e1432] font-bold py-3 rounded-xl hover:bg-white/90 transition-all transform active:scale-95 shadow-lg mt-2"
+            onClick={handleLogin}
+            disabled={isLoggingIn}
+            className="w-full bg-white text-[#8e1432] font-bold py-3 rounded-xl hover:bg-white/90 transition-all transform active:scale-95 shadow-lg mt-2 disabled:opacity-70"
           >
-            Acceder
+            {isLoggingIn ? 'Accediendo...' : 'Acceder'}
           </button>
         </div>
       </div>
