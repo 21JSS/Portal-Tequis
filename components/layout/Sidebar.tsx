@@ -1,18 +1,22 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { User, LayoutGrid, CreditCard, Settings, LogOut } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Libre_Caslon_Text } from "next/font/google"
 import { useAuth } from "@/lib/context/AuthContext"
+import { useSession } from "next-auth/react"
 import { LoginForm } from "@/components/auth/LoginForm"
+import { ProfilePanel } from "./ProfilePanel"
 
 const libreCaslon = Libre_Caslon_Text({ weight: ["400", "700"], subsets: ["latin"] })
 
 export function Sidebar() {
   const pathname = usePathname()
   const { isAuthenticated, logout } = useAuth()
+  const { data: session } = useSession()
+  const [profileOpen, setProfileOpen] = useState(false)
 
   if (!isAuthenticated) {
     return (
@@ -22,48 +26,71 @@ export function Sidebar() {
     )
   }
 
+  const userImage = session?.user?.image
+  const userName = session?.user?.name || session?.user?.email || ''
+  const userInitial = userName ? userName[0].toUpperCase() : 'U'
+
   return (
-    <aside className="w-[88px] bg-gradient-to-b from-[#b1193f] to-[#8e1432] h-screen sticky top-0 flex flex-col items-center py-6 shadow-xl z-20 transition-all duration-500">
-      {/* Logo */}
-      <div className="flex flex-col items-center justify-center mb-6 w-full px-1 mt-3 animate-fade-in-up">
-        <img 
-          src="/Tequisquiapan-Presidencia-2.svg" 
-          alt="Tequisquiapan" 
-          className="w-[50px] h-auto drop-shadow-md mb-1 transition-all brightness-0 invert" 
-        />
-        <span className={`text-[10px] font-bold tracking-wider text-white/90 -mt-0.5 ${libreCaslon.className}`}>Tequisquiapan</span>
-      </div>
+    <>
+      <aside className="w-[88px] bg-gradient-to-b from-[#b1193f] to-[#8e1432] h-screen sticky top-0 flex flex-col items-center py-6 shadow-xl z-20 transition-all duration-500">
+        {/* Logo */}
+        <div className="flex flex-col items-center justify-center mb-6 w-full px-1 mt-3 animate-fade-in-up">
+          <img 
+            src="/Tequisquiapan-Presidencia-2.svg" 
+            alt="Tequisquiapan" 
+            className="w-[50px] h-auto drop-shadow-md mb-1 transition-all brightness-0 invert" 
+          />
+          <span className={`text-[10px] font-bold tracking-wider text-white/90 -mt-0.5 ${libreCaslon.className}`}>Tequisquiapan</span>
+        </div>
 
-      {/* Divider */}
-      <div className="w-10 h-px bg-white/20 mb-4" />
+        {/* Divider */}
+        <div className="w-10 h-px bg-white/20 mb-4" />
 
-      {/* User Profile Avatar */}
-      <div className="mb-5 p-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-white/20">
-        <User className="w-5 h-5 text-white" />
-      </div>
+        {/* User Profile Avatar - Clickable */}
+        <button
+          onClick={() => setProfileOpen(true)}
+          className="mb-5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-white/20 hover:scale-105 overflow-hidden relative group"
+        >
+          {userImage ? (
+            <img 
+              src={userImage} 
+              alt="Perfil" 
+              className="w-10 h-10 rounded-xl object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm">
+              {userInitial}
+            </div>
+          )}
+          <span className="sidebar-tooltip">Mi Perfil</span>
+        </button>
 
-      {/* Divider */}
-      <div className="w-10 h-px bg-white/20 mb-4" />
+        {/* Divider */}
+        <div className="w-10 h-px bg-white/20 mb-4" />
 
-      {/* Navigation */}
-      <nav className="flex flex-col gap-2 w-full px-3">
-        <NavItem href="/" icon={LayoutGrid} label="Dashboard" isActive={pathname === "/"} />
-        <NavItem href="/" icon={CreditCard} label="Trámites" isActive={pathname.startsWith("/tramites")} />
-      </nav>
+        {/* Navigation */}
+        <nav className="flex flex-col gap-2 w-full px-3">
+          <NavItem href="/" icon={LayoutGrid} label="Dashboard" isActive={pathname === "/"} />
+          <NavItem href="/" icon={CreditCard} label="Trámites" isActive={pathname.startsWith("/tramites")} />
+        </nav>
 
-      {/* Bottom Actions */}
-      <div className="mt-auto flex flex-col gap-2 w-full px-3">
-        <div className="w-10 h-px bg-white/20 mx-auto mb-2" />
-        <NavItem href="#" icon={Settings} label="Ajustes" isActive={false} />
-        <NavItem 
-          href="#" 
-          icon={LogOut} 
-          label="Salir" 
-          isActive={false} 
-          onClick={logout}
-        />
-      </div>
-    </aside>
+        {/* Bottom Actions */}
+        <div className="mt-auto flex flex-col gap-2 w-full px-3">
+          <div className="w-10 h-px bg-white/20 mx-auto mb-2" />
+          <NavItem href="#" icon={Settings} label="Ajustes" isActive={false} />
+          <NavItem 
+            href="#" 
+            icon={LogOut} 
+            label="Salir" 
+            isActive={false} 
+            onClick={logout}
+          />
+        </div>
+      </aside>
+
+      {/* Profile Panel */}
+      <ProfilePanel isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
+    </>
   )
 }
 

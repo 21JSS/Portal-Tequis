@@ -2,10 +2,12 @@
 
 import { Search, Bell, HelpCircle, Keyboard } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 
 export function Topbar() {
   const [currentTime, setCurrentTime] = useState<string>("")
   const [currentDate, setCurrentDate] = useState<string>("")
+  const { data: session } = useSession()
 
   useEffect(() => {
     const updateTime = () => {
@@ -17,6 +19,9 @@ export function Topbar() {
     const interval = setInterval(updateTime, 30000)
     return () => clearInterval(interval)
   }, [])
+
+  const userName = session?.user?.name || session?.user?.email?.split('@')[0] || ''
+  const userImage = session?.user?.image
 
   return (
     <header className="h-16 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl flex items-center justify-between px-8 sticky top-0 z-10 animate-slide-down">
@@ -55,6 +60,23 @@ export function Topbar() {
           <HelpCircle className="w-4 h-4 text-[#c5283d]" />
           Guía Rápida
         </button>
+
+        {/* User info */}
+        {session?.user && (
+          <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
+            {userImage ? (
+              <img src={userImage} alt="Perfil" className="w-8 h-8 rounded-full object-cover border-2 border-slate-200" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#c5283d] to-[#8e1432] flex items-center justify-center text-white text-xs font-bold">
+                {userName[0]?.toUpperCase() || 'U'}
+              </div>
+            )}
+            <div className="hidden lg:block">
+              <p className="text-sm font-semibold text-slate-800 leading-tight">{userName}</p>
+              <p className="text-[10px] text-slate-400 leading-tight">{session.user.role || 'Ciudadano'}</p>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   )
