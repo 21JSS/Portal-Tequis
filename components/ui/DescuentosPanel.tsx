@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { BadgePercent, Tag, Calendar, Sparkles, Check, Copy, AlertCircle, RefreshCw } from 'lucide-react'
+import { BadgePercent, Tag, Calendar, Sparkles, Check, Copy, AlertCircle, RefreshCw, ChevronDown } from 'lucide-react'
 
 export interface Descuento {
   id: string
@@ -23,6 +23,7 @@ export function DescuentosPanel({ onSelectTramite }: DescuentosPanelProps) {
   const [descuentos, setDescuentos] = useState<Descuento[]>([])
   const [loading, setLoading] = useState(true)
   const [copiadoId, setCopiadoId] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(true)
 
   const cargarDescuentos = async () => {
     try {

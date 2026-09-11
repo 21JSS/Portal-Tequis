@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { PredialLayout } from '@/components/predial/PredialLayout'
-import { CreditCard, Landmark, ChevronRight, Loader2, Lock, AlertCircle } from 'lucide-react'
+import { CreditCard, Landmark, ChevronRight, Loader2, Lock, AlertCircle, Tag } from 'lucide-react'
 
 function formatMoneda(n: number) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n)
@@ -35,6 +35,36 @@ export default function ConfirmacionPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
 
+  // Descuentos
+  const [descuentosDisponibles, setDescuentosDisponibles] = useState<any[]>([])
+  const [descuentoSeleccionado, setDescuentoSeleccionado] = useState<any | null>(null)
+  const [totalConDescuento, setTotalConDescuento] = useState(total)
+
+  useEffect(() => {
+    async function fetchDescuentos() {
+      try {
+        const res = await fetch('/api/descuentos')
+        if (res.ok) {
+          const data = await res.json()
+          setDescuentosDisponibles(data)
+        }
+      } catch (e) {
+        console.error('Error cargando descuentos:', e)
+      }
+    }
+    fetchDescuentos()
+  }, [])
+
+  useEffect(() => {
+    if (descuentoSeleccionado) {
+      const porcentaje = descuentoSeleccionado.porcentaje || 0
+      const montoDescuento = total * (porcentaje / 100)
+      setTotalConDescuento(total - montoDescuento)
+    } else {
+      setTotalConDescuento(total)
+    }
+  }, [descuentoSeleccionado, total])
+
   // Tarjeta fields
   const [cardNum, setCardNum]         = useState('')
   const [cardName, setCardName]       = useState('')
@@ -59,7 +89,7 @@ export default function ConfirmacionPage() {
         body: JSON.stringify({
           clave,
           periodos_ids: periodos.split(',').filter(Boolean),
-          total,
+          total: totalConDescuento,
           metodo,
           pagador: { nombre, rfc, email, telefono },
           ...(metodo === 'tarjeta' ? { tarjeta: { numero_last4: cardNum.replace(/\s/g, '').slice(-4), titular: cardName } } : {}),
@@ -112,9 +142,47 @@ export default function ConfirmacionPage() {
                 </div>
               ))}
             </div>
+
+            {/* Selección de Descuento */}
+            <div className="pt-4 space-y-3">
+              <label className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                <Tag className="w-3.5 h-3.5 text-emerald-600" /> Aplicar Descuento
+              </label>
+              <div className="grid grid-cols-1 gap-2">
+                {descuentosDisponibles.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic">No hay descuentos disponibles actualmente.</p>
+                ) : (
+                  descuentosDisponibles.map(desc => (
+                    <button
+                      key={desc.id}
+                      onClick={() => setDescuentoSeleccionado(desc.id === descuentoSeleccionado?.id ? null : desc)}
+                      className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all text-left ${
+                        descuentoSeleccionado?.id === desc.id
+                          ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
+                          : 'border-slate-100 bg-slate-50 text-slate-600 hover:border-slate-200'
+                      }`}
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold">{desc.titulo}</span>
+                        <span className="text-[11px] opacity-70">{desc.descripcion}</span>
+                      </div>
+                      <span className="text-sm font-extrabold">{desc.porcentaje}% OFF</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
             <div className="flex justify-between items-center bg-red-50/60 rounded-xl px-4 py-3 border border-red-100">
-              <span className="font-bold text-slate-800">Total a Pagar</span>
-              <span className="text-2xl font-bold text-[#c5283d]">{formatMoneda(total)}</span>
+              <div className="flex flex-col">
+                <span className="font-bold text-slate-800">Total a Pagar</span>
+                {descuentoSeleccionado && (
+                  <span className="text-[10px] text-emerald-600 font-medium">
+                    Aplicando {descuentoSeleccionado.porcentaje}% de descuento
+                  </span>
+                )}
+              </div>
+              <span className="text-2xl font-bold text-[#c5283d]">{formatMoneda(totalConDescuento)}</span>
             </div>
           </div>
         </div>
