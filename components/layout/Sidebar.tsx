@@ -20,7 +20,7 @@ export function Sidebar() {
 
   if (!isAuthenticated) {
     return (
-      <aside className="fixed inset-0 bg-gradient-to-b from-[#b1193f] to-[#8e1432] z-50 flex flex-col items-center justify-center px-6 transition-all duration-700 ease-in-out animate-in slide-in-from-left duration-1000">
+      <aside className="fixed inset-0 bg-gradient-to-b from-[#b1193f] to-[#8e1432] z-50 flex flex-col items-center justify-center p-4 overflow-y-auto transition-all ease-in-out animate-in fade-in duration-500">
         <LoginForm />
       </aside>
     )
