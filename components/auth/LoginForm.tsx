@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Mail, Lock, User, ArrowLeft, Send } from "lucide-react"
+import { Mail, Lock, User, ArrowLeft, Send, Eye, EyeOff } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { signIn } from "next-auth/react"
@@ -14,6 +14,7 @@ export function LoginForm() {
   
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   
@@ -117,14 +118,7 @@ export function LoginForm() {
       <div className="w-full bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 shadow-2xl transition-all duration-500">
         <div className="flex flex-col gap-5">
           
-          {mode !== 'login' && (
-             <button 
-                onClick={() => { setMode('login'); setError(''); setSuccess(''); }} 
-                className="self-start flex items-center text-white/70 hover:text-white transition-colors text-sm mb-2"
-             >
-               <ArrowLeft className="w-4 h-4 mr-1" /> Volver
-             </button>
-          )}
+
 
           {mode === 'register' && (
             <div className="flex gap-4">
@@ -176,12 +170,19 @@ export function LoginForm() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-white/30 outline-none focus:ring-2 focus:ring-white/40 transition-all"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl py-3 pl-11 pr-12 text-white placeholder:text-white/30 outline-none focus:ring-2 focus:ring-white/40 transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
           )}
@@ -239,23 +240,51 @@ export function LoginForm() {
           )}
 
           {mode === 'register' && (
-             <button
-              onClick={handleRegister}
-              disabled={isLoggingIn}
-              className="w-full bg-white text-[#8e1432] font-bold py-3 rounded-xl hover:bg-white/90 transition-all transform active:scale-95 shadow-lg mt-2 disabled:opacity-70"
-            >
-              Registrarme
-            </button>
+             <div className="flex flex-col gap-3 mt-2">
+               <button
+                onClick={handleRegister}
+                disabled={isLoggingIn}
+                className="w-full bg-white text-[#8e1432] font-bold py-3 rounded-xl hover:bg-white/90 transition-all transform active:scale-95 shadow-lg disabled:opacity-70"
+              >
+                Registrarme
+              </button>
+              
+              <button
+                onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
+                disabled={isLoggingIn}
+                className="w-full h-[52px] bg-white/5 border border-white/20 rounded-xl relative text-white font-bold group flex items-center justify-center transition-all disabled:opacity-70"
+                type="button"
+              >
+                <div className="absolute left-1 top-1 bottom-1 w-11 bg-[#8e1432] rounded-lg flex items-center justify-center group-hover:w-[calc(100%-8px)] z-10 transition-all duration-500 ease-out">
+                  <ArrowLeft className="w-5 h-5 text-white" />
+                </div>
+                <span className="ml-6 tracking-wide">Regresar</span>
+              </button>
+             </div>
           )}
 
           {mode === 'forgot' && (
-             <button
-              onClick={handleForgotPassword}
-              disabled={isLoggingIn}
-              className="w-full bg-white text-[#8e1432] font-bold py-3 rounded-xl hover:bg-white/90 transition-all transform active:scale-95 shadow-lg mt-2 disabled:opacity-70 flex items-center justify-center gap-2"
-            >
-              <Send className="w-4 h-4" /> Enviar enlace
-            </button>
+             <div className="flex flex-col gap-3 mt-2">
+               <button
+                onClick={handleForgotPassword}
+                disabled={isLoggingIn}
+                className="w-full bg-white text-[#8e1432] font-bold py-3 rounded-xl hover:bg-white/90 transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                <Send className="w-4 h-4" /> Enviar enlace
+              </button>
+              
+              <button
+                onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
+                disabled={isLoggingIn}
+                className="w-full h-[52px] bg-white/5 border border-white/20 rounded-xl relative text-white font-bold group flex items-center justify-center transition-all disabled:opacity-70"
+                type="button"
+              >
+                <div className="absolute left-1 top-1 bottom-1 w-11 bg-[#8e1432] rounded-lg flex items-center justify-center group-hover:w-[calc(100%-8px)] z-10 transition-all duration-500 ease-out">
+                  <ArrowLeft className="w-5 h-5 text-white" />
+                </div>
+                <span className="ml-6 tracking-wide">Regresar</span>
+              </button>
+             </div>
           )}
         </div>
       </div>

@@ -1,25 +1,42 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext } from 'react'
+import { SessionProvider, useSession, signOut } from "next-auth/react"
 
 interface AuthContextType {
   isAuthenticated: boolean
+  userRole: string | null
   login: () => void
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(true) // Por defecto true para que veas tu dashboard, luego lo cambiaremos
+function AuthContextInner({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession()
+  
+  const isAuthenticated = status === "authenticated"
+  const userRole = session?.user?.role || null
 
-  const login = () => setIsAuthenticated(true)
-  const logout = () => setIsAuthenticated(false)
+  const login = () => {
+    // LoginForm ahora usa signIn de next-auth/react
+  }
+  const logout = () => signOut()
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout }}>
       {children}
     </AuthContext.Provider>
+  )
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      <AuthContextInner>
+        {children}
+      </AuthContextInner>
+    </SessionProvider>
   )
 }
 
