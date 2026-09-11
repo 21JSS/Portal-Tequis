@@ -39,6 +39,7 @@ export default function ConfirmacionPage() {
   const [descuentosDisponibles, setDescuentosDisponibles] = useState<any[]>([])
   const [descuentoSeleccionado, setDescuentoSeleccionado] = useState<any | null>(null)
   const [totalConDescuento, setTotalConDescuento] = useState(total)
+  const [mostrarDescuentos, setMostrarDescuentos] = useState(false)
 
   useEffect(() => {
     async function fetchDescuentos() {
@@ -133,7 +134,6 @@ export default function ConfirmacionPage() {
                 { label: 'Clave Catastral', value: clave },
                 { label: 'Periodos a pagar', value: `${numPeriodos} periodo${numPeriodos !== 1 ? 's' : ''}` },
                 { label: 'Pagador', value: nombre },
-                { label: 'RFC', value: rfc },
                 { label: 'Correo', value: email },
               ].map(r => (
                 <div key={r.label} className="flex justify-between text-sm py-1.5 border-b border-slate-50 last:border-0">
@@ -143,34 +143,50 @@ export default function ConfirmacionPage() {
               ))}
             </div>
 
-            {/* Selección de Descuento */}
+            {/* Selección de Descuento (Desplegable) */}
             <div className="pt-4 space-y-3">
-              <label className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-wider">
-                <Tag className="w-3.5 h-3.5 text-emerald-600" /> Aplicar Descuento
-              </label>
-              <div className="grid grid-cols-1 gap-2">
-                {descuentosDisponibles.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic">No hay descuentos disponibles actualmente.</p>
-                ) : (
-                  descuentosDisponibles.map(desc => (
-                    <button
-                      key={desc.id}
-                      onClick={() => setDescuentoSeleccionado(desc.id === descuentoSeleccionado?.id ? null : desc)}
-                      className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all text-left ${
-                        descuentoSeleccionado?.id === desc.id
-                          ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
-                          : 'border-slate-100 bg-slate-50 text-slate-600 hover:border-slate-200'
-                      }`}
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold">{desc.titulo}</span>
-                        <span className="text-[11px] opacity-70">{desc.descripcion}</span>
-                      </div>
-                      <span className="text-sm font-extrabold">{desc.porcentaje}% OFF</span>
-                    </button>
-                  ))
-                )}
-              </div>
+              <button 
+                type="button"
+                onClick={() => setMostrarDescuentos(!mostrarDescuentos)}
+                className="flex items-center justify-between w-full text-xs font-bold text-slate-600 uppercase tracking-wider group hover:text-emerald-700 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <Tag className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" /> 
+                  Aplicar Descuento
+                  {descuentoSeleccionado && (
+                    <span className="ml-2 bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px]">
+                      1 Activo
+                    </span>
+                  )}
+                </div>
+                <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${mostrarDescuentos ? 'rotate-90' : ''}`} />
+              </button>
+              
+              {mostrarDescuentos && (
+                <div className="grid grid-cols-1 gap-2 animate-slide-down origin-top mt-2">
+                  {descuentosDisponibles.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic bg-slate-50 p-3 rounded-xl border border-slate-100">No hay descuentos disponibles actualmente.</p>
+                  ) : (
+                    descuentosDisponibles.map(desc => (
+                      <button
+                        key={desc.id}
+                        onClick={() => setDescuentoSeleccionado(desc.id === descuentoSeleccionado?.id ? null : desc)}
+                        className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all text-left ${
+                          descuentoSeleccionado?.id === desc.id
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm'
+                            : 'border-slate-100 bg-slate-50 text-slate-600 hover:border-slate-200'
+                        }`}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold">{desc.titulo}</span>
+                          {desc.descripcion && <span className="text-[11px] opacity-70 leading-tight mt-0.5">{desc.descripcion}</span>}
+                        </div>
+                        <span className="text-sm font-extrabold ml-3 shrink-0">{desc.porcentaje}% OFF</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between items-center bg-red-50/60 rounded-xl px-4 py-3 border border-red-100">

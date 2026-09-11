@@ -7,21 +7,14 @@ import { ChevronRight, User, Mail, Phone, Hash, AlertCircle } from 'lucide-react
 
 interface FormData {
   nombre: string
-  rfc: string
   email: string
   telefono: string
 }
 
 interface Errors {
   nombre?: string
-  rfc?: string
   email?: string
   telefono?: string
-}
-
-function validateRFC(rfc: string): boolean {
-  const re = /^([A-ZÑ&]{3,4})\d{6}([A-Z\d]{3})?$/
-  return re.test(rfc.toUpperCase().trim())
 }
 
 function validateEmail(email: string): boolean {
@@ -35,7 +28,7 @@ export default function PagadorPage() {
   const periodos = searchParams.get('periodos') || ''
   const total = searchParams.get('total') || '0'
 
-  const [form, setForm] = useState<FormData>({ nombre: '', rfc: '', email: '', telefono: '' })
+  const [form, setForm] = useState<FormData>({ nombre: '', email: '', telefono: '' })
   const [errors, setErrors] = useState<Errors>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
@@ -52,7 +45,6 @@ export default function PagadorPage() {
   function validate(data: FormData): boolean {
     const e: Errors = {}
     if (!data.nombre.trim() || data.nombre.trim().length < 3) e.nombre = 'Ingrese el nombre completo.'
-    if (!data.rfc.trim()) { e.rfc = 'RFC requerido.' } else if (!validateRFC(data.rfc)) { e.rfc = 'RFC inválido. Formato: AAAA000000AA0' }
     if (!data.email.trim()) { e.email = 'Correo requerido.' } else if (!validateEmail(data.email)) { e.email = 'Correo electrónico inválido.' }
     if (!data.telefono.trim() || data.telefono.replace(/\D/g, '').length < 10) e.telefono = 'Teléfono de 10 dígitos requerido.'
     setErrors(e)
@@ -61,14 +53,13 @@ export default function PagadorPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setTouched({ nombre: true, rfc: true, email: true, telefono: true })
+    setTouched({ nombre: true, email: true, telefono: true })
     if (!validate(form)) return
     const params = new URLSearchParams({
       clave,
       periodos,
       total,
       nombre: form.nombre.trim().toUpperCase(),
-      rfc: form.rfc.trim().toUpperCase(),
       email: form.email.trim().toLowerCase(),
       telefono: form.telefono.replace(/\D/g, ''),
     })
@@ -82,14 +73,6 @@ export default function PagadorPage() {
       label: 'Nombre Completo',
       placeholder: 'Ej. JUAN PÉREZ GARCÍA',
       icon: User,
-      type: 'text',
-    },
-    {
-      id: 'pagador-rfc',
-      field: 'rfc' as keyof FormData,
-      label: 'RFC',
-      placeholder: 'Ej. PEGJ800101ABC',
-      icon: Hash,
       type: 'text',
     },
     {

@@ -1,14 +1,18 @@
 'use client'
 
-import { Search, Bell, HelpCircle, Keyboard, ShieldCheck, User } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Search, Keyboard, ChevronRight } from "lucide-react"
+import { useEffect, useState, useRef } from "react"
 import { useAuth } from "@/lib/context/AuthContext"
 import { WeatherWidget } from "@/components/ui/WeatherWidget"
 import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export function Topbar() {
   const { user } = useAuth()
-  const isAdmin = user?.role === 'admin'
+  const router = useRouter()
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showResults, setShowResults] = useState(false)
 
   const [currentTime, setCurrentTime] = useState<string>("")
   const [currentDate, setCurrentDate] = useState<string>("")
@@ -24,6 +28,30 @@ export function Topbar() {
     const interval = setInterval(updateTime, 30000)
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  const tramitesList = [
+    { id: 'predial', nombre: 'Pago de Predial', url: '/tramites/predial/busqueda' },
+    { id: 'licencias', nombre: 'Licencias de Funcionamiento', url: '/tramites/licencias' },
+    { id: 'traslado', nombre: 'Traslado de Dominio', url: '/tramites/traslado' },
+    { id: 'atencion', nombre: 'Atención Ciudadana', url: '/tramites/atencion' },
+    { id: 'catastral', nombre: 'Consulta Catastral', url: '/tramites/catastral' },
+    { id: 'manuales', nombre: 'Manuales de Uso', url: '/tramites/manuales' },
+    { id: 'sare', nombre: 'SARE', url: '/tramites/sare' },
+    { id: 'registro-civil', nombre: 'Registro Civil', url: '/tramites/registro-civil' },
+  ]
+
+  const filteredTramites = tramitesList.filter(t => t.nombre.toLowerCase().includes(searchQuery.toLowerCase()))
 
   const userName = session?.user?.name || session?.user?.email?.split('@')[0] || ''
   const userImage = session?.user?.image
@@ -50,7 +78,15 @@ export function Topbar() {
         <div className="relative group">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 transition-colors group-focus-within:text-[#c5283d]" />
           <input
+            ref={searchInputRef}
             type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setShowResults(true)
+            }}
+            onFocus={() => setShowResults(true)}
+            onBlur={() => setTimeout(() => setShowResults(false), 200)}
             placeholder="Buscar trámite, clave o servicio..."
             className="search-expandable pl-10 pr-16 py-2.5 w-72 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#c5283d]/40 focus:ring-2 focus:ring-[#c5283d]/10 transition-all bg-slate-50/80 placeholder:text-slate-400"
           />
@@ -58,28 +94,35 @@ export function Topbar() {
             <Keyboard className="w-3 h-3" />
             <span>Ctrl+K</span>
           </div>
+
+          {/* Search Dropdown */}
+          {showResults && searchQuery && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg shadow-black/5 overflow-hidden z-50">
+              {filteredTramites.length > 0 ? (
+                <div className="max-h-64 overflow-y-auto py-1">
+                  {filteredTramites.map(tramite => (
+                    <button
+                      key={tramite.id}
+                      onClick={() => {
+                        router.push(tramite.url)
+                        setSearchQuery('')
+                        setShowResults(false)
+                      }}
+                      className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                    >
+                      <span className="text-sm text-slate-700 font-medium">{tramite.nombre}</span>
+                      <ChevronRight className="w-4 h-4 text-slate-300" />
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="px-4 py-6 text-center text-sm text-slate-500">
+                  No se encontraron trámites.
+                </div>
+              )}
+            </div>
+          )}
         </div>
-
-        {/* User Role Badge */}
-        <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${isAdmin
-            ? 'bg-amber-50 text-amber-900 border-amber-200/90'
-            : 'bg-slate-100 text-slate-700 border-slate-200'
-          }`}>
-          {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-amber-600" /> : <User className="w-3.5 h-3.5 text-slate-500" />}
-          <span>{isAdmin ? 'Administrador' : 'Ciudadano'}</span>
-        </div>
-
-        {/* Notifications */}
-        <button className="relative p-2.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all duration-200">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-[#c5283d] rounded-full border-2 border-white animate-pulse-dot" />
-        </button>
-
-        {/* Guide Button */}
-        <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 shadow-sm">
-          <HelpCircle className="w-4 h-4 text-[#c5283d]" />
-          Guía Rápida
-        </button>
 
         {/* User info */}
         {session?.user && (

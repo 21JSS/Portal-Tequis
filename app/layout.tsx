@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="es"
       className={`${inter.variable} h-full antialiased font-sans`}
     >
-      <body className={`${inter.className} min-h-full flex flex-col`}>
+      <body className={`min-h-full flex flex-col`}>
         <AuthProvider>
           {children}
           <ChatWidget />

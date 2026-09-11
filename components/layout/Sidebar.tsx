@@ -1,22 +1,29 @@
 'use client'
 
 import React, { useState } from 'react'
-import { User, LayoutGrid, CreditCard, Settings, LogOut } from "lucide-react"
+import { User, LayoutGrid, CreditCard, Settings, LogOut, Building2 } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { Libre_Caslon_Text } from "next/font/google"
 import { useAuth } from "@/lib/context/AuthContext"
 import { useSession } from "next-auth/react"
 import { LoginForm } from "@/components/auth/LoginForm"
 import { ProfilePanel } from "./ProfilePanel"
-
-const libreCaslon = Libre_Caslon_Text({ weight: ["400", "700"], subsets: ["latin"] })
+import { LoadingScreen } from "@/components/ui/LoadingScreen"
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { isAuthenticated, logout } = useAuth()
-  const { data: session } = useSession()
+  const { isAuthenticated, logout, userRole } = useAuth()
+  const { data: session, status } = useSession()
+  const isAdmin = userRole === 'admin' || userRole === 'Administrador'
   const [profileOpen, setProfileOpen] = useState(false)
+
+  if (status === "loading") {
+    return (
+      <aside className="fixed inset-0 bg-gradient-to-b from-[#b1193f] to-[#8e1432] z-50 flex flex-col items-center justify-center p-4">
+        <LoadingScreen />
+      </aside>
+    )
+  }
 
   if (!isAuthenticated) {
     return (
@@ -40,7 +47,7 @@ export function Sidebar() {
             alt="Tequisquiapan" 
             className="w-[50px] h-auto drop-shadow-md mb-1 transition-all brightness-0 invert" 
           />
-          <span className={`text-[10px] font-bold tracking-wider text-white/90 -mt-0.5 ${libreCaslon.className}`}>Tequisquiapan</span>
+          <span className={`text-[10px] font-bold tracking-wider text-white/90 -mt-0.5 font-sans`}>Tequisquiapan</span>
         </div>
 
         {/* Divider */}
@@ -49,7 +56,7 @@ export function Sidebar() {
         {/* User Profile Avatar - Clickable */}
         <button
           onClick={() => setProfileOpen(true)}
-          className="mb-5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-white/20 hover:scale-105 overflow-hidden relative group"
+          className="sidebar-nav-item mb-5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-white/20 hover:scale-105 relative group"
         >
           {userImage ? (
             <img 
@@ -70,8 +77,13 @@ export function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex flex-col gap-2 w-full px-3">
-          <NavItem href="/" icon={LayoutGrid} label="Dashboard" isActive={pathname === "/"} />
-          <NavItem href="/" icon={CreditCard} label="Trámites" isActive={pathname.startsWith("/tramites")} />
+          {isAdmin && (
+            <>
+              <NavItem href="/admin/dashboard" icon={LayoutGrid} label="Dashboard" isActive={pathname === "/admin/dashboard"} />
+              <NavItem href="/admin/predial" icon={Building2} label="Gestión Predial" isActive={pathname.startsWith("/admin/predial")} />
+            </>
+          )}
+          <NavItem href="/" icon={CreditCard} label="Trámites" isActive={pathname === "/" || pathname.startsWith("/tramites")} />
         </nav>
 
         {/* Bottom Actions */}
