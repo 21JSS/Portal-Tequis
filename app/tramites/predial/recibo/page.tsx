@@ -49,7 +49,7 @@ export default function ReciboPage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-6 print:space-y-0">
         <Breadcrumbs items={[
           { label: 'Trámites', href: '/' },
           { label: 'Pago de Predial', href: '/tramites/predial/busqueda' },
@@ -57,15 +57,15 @@ export default function ReciboPage() {
         ]} />
 
         {/* Print area */}
-        <div ref={printRef} id="recibo-predial" className="print:pt-0">
+        <div ref={printRef} id="recibo-predial" className="print:pt-0 print:mt-0">
 
           {/* Header Logo - Visible only on print/PDF */}
-          <div className="hidden print:flex flex-col items-center justify-center pt-0 pb-2 border-b border-slate-200 mb-4">
+          <div className="hidden print:flex flex-col items-center justify-center pt-0 pb-2 border-b border-slate-200 mb-4 print:mb-2 print:pb-1.5">
             <img
               src="/Logo-PDF-Tequisquiapan.svg"
               alt="Logo Tequisquiapan"
-              className="h-40 w-auto block"
-              style={{ marginBottom: '10px' }}
+              className="h-40 w-auto block print:h-28"
+              style={{ marginBottom: '6px' }}
             />
             <p className="text-sm font-bold text-slate-800 uppercase tracking-wide z-10">
               H. Ayuntamiento de Tequisquiapan, Qro.
@@ -76,34 +76,26 @@ export default function ReciboPage() {
           </div>
 
           {/* Success banner */}
-          <div
-            className="rounded-2xl p-6 text-center text-white relative overflow-hidden mb-4"
-            style={{ background: 'linear-gradient(135deg, #c5283d 0%, #e8445a 40%, #ff6b81 100%)' }}
-          >
-            <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10" />
-            <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
-
-            <div className="relative z-10">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3">
-                <CheckCircle2 className="w-6 h-6 text-white" />
-              </div>
-              <h1 className="text-xl font-bold mb-1">
-                {metodo === 'referencia' ? '¡Referencia Generada!' : '¡Pago Exitoso!'}
-              </h1>
-              <p className="text-white/80 text-xs">
-                {metodo === 'referencia'
-                  ? 'Pague con la referencia bancaria en cualquier banco o OXXO.'
-                  : 'Su pago de predial ha sido registrado correctamente.'}
-              </p>
+          <div className="bg-white border border-slate-200/70 rounded-2xl p-4 text-center mb-4 shadow-xs print:bg-transparent print:border-none print:shadow-none print:p-0 print:mb-2 print:mt-1">
+            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full flex items-center justify-center mx-auto mb-2 print:hidden">
+              <CheckCircle2 className="w-5 h-5" />
             </div>
+            <h1 className="text-xl font-bold text-slate-900 mb-1 print:text-lg print:mb-0.5">
+              {metodo === 'referencia' ? '¡Referencia Generada!' : '¡Pago Exitoso!'}
+            </h1>
+            <p className="text-slate-500 text-xs">
+              {metodo === 'referencia'
+                ? 'Pague con la referencia bancaria en cualquier banco o OXXO.'
+                : 'Su pago de predial ha sido registrado correctamente.'}
+            </p>
           </div>
 
           {/* Folio */}
-          <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-sm p-5 space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-sm p-5 space-y-4 print:p-3 print:space-y-1.5 print:rounded-xl">
+            <div className="flex items-center justify-between flex-wrap gap-3 print:gap-1">
               <div>
                 <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Folio de Pago</p>
-                <p className="text-xl font-bold font-mono text-slate-900 mt-0.5">{folio}</p>
+                <p className="text-xl font-bold font-mono text-slate-900 mt-0.5 print:text-lg">{folio}</p>
               </div>
               <span className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5 ${metodo === 'tarjeta' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
                 }`}>
@@ -120,9 +112,9 @@ export default function ReciboPage() {
                 { label: 'Correo', value: email },
                 { label: 'Total Pagado', value: formatMoneda(total), bold: true },
               ].map(r => (
-                <div key={r.label} className="flex justify-between py-2">
+                <div key={r.label} className="flex justify-between py-2 print:py-1">
                   <span className="text-slate-500 text-xs">{r.label}</span>
-                  <span className={r.bold ? 'font-bold text-[#8e1432] text-sm' : 'font-medium text-slate-800 text-xs'}>{r.value}</span>
+                  <span className={r.bold ? 'font-bold text-[#8e1432] text-sm print:text-xs' : 'font-medium text-slate-800 text-xs'}>{r.value}</span>
                 </div>
               ))}
             </div>
@@ -130,13 +122,13 @@ export default function ReciboPage() {
 
           {/* Referencia bancaria */}
           {metodo === 'referencia' && referencia && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mt-5 space-y-4">
-              <div className="flex items-center gap-2 text-amber-800 font-bold">
-                <Landmark className="w-5 h-5" />
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mt-5 space-y-4 print:p-3 print:mt-2.5 print:space-y-2 print:rounded-xl">
+              <div className="flex items-center gap-2 text-amber-800 font-bold print:text-sm">
+                <Landmark className="w-5 h-5 print:w-4 print:h-4" />
                 Datos para Pago Bancario / OXXO
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 print:space-y-1.5">
                 {[
                   { label: 'Referencia', value: referencia },
                   { label: 'Banco(s)', value: banco },
@@ -144,15 +136,15 @@ export default function ReciboPage() {
                   { label: 'Monto', value: formatMoneda(total) },
                   { label: 'Vigencia', value: vigencia },
                 ].map(r => (
-                  <div key={r.label} className="flex items-center justify-between bg-white rounded-xl px-4 py-2.5 border border-amber-100">
+                  <div key={r.label} className="flex items-center justify-between bg-white rounded-xl px-4 py-2.5 border border-amber-100 print:px-3 print:py-1.5 print:rounded-lg">
                     <div>
                       <p className="text-[10px] text-amber-600 font-semibold uppercase tracking-wider">{r.label}</p>
-                      <p className="text-sm font-bold text-slate-800 font-mono mt-0.5">{r.value}</p>
+                      <p className="text-sm font-bold text-slate-800 font-mono mt-0.5 print:text-xs">{r.value}</p>
                     </div>
                     {(r.label === 'Referencia' || r.label === 'Convenio CIE') && (
                       <button
                         onClick={() => handleCopy(r.value)}
-                        className="p-2 rounded-lg hover:bg-amber-100 text-amber-600 transition-colors"
+                        className="p-2 rounded-lg hover:bg-amber-100 text-amber-600 transition-colors print:hidden"
                         title="Copiar"
                       >
                         <Copy className="w-4 h-4" />
@@ -186,7 +178,7 @@ export default function ReciboPage() {
         </div>
 
         {/* Footer note */}
-        <p className="text-xs text-slate-400 text-center pb-6">
+        <p className="text-xs text-slate-400 text-center pb-6 print:pb-0 print:mt-3 print:text-[11px]">
           Municipio de Tequisquiapan — Ventanilla Digital · {new Date().getFullYear()}
         </p>
       </div>

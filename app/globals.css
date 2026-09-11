@@ -462,6 +462,11 @@
    ═══════════════════════════════════════════ */
 
 @media print {
+  @page {
+    margin: 8mm 12mm;
+    size: auto;
+  }
+
   aside,
   header,
   nav,
@@ -472,6 +477,13 @@
   body {
     background: white !important;
     color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   #recibo-predial {
@@ -479,6 +491,8 @@
     max-width: 680px;
     margin: 0 auto;
     padding: 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .rounded-2xl {
