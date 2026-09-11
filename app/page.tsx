@@ -22,8 +22,8 @@ function getGreeting(): string {
 
 export default function HomePage() {
   const router = useRouter()
-  const { user } = useAuth()
-  const isAdmin = user?.role === 'admin'
+  const { userRole } = useAuth()
+  const isAdmin = userRole === 'admin' || userRole === 'Administrador'
 
   const [filtroActivo, setFiltroActivo] = useState("Todos (8)")
   const [mounted, setMounted] = useState(false)
@@ -179,59 +179,6 @@ export default function HomePage() {
     <DashboardLayout>
       <div className="max-w-[1440px] mx-auto space-y-8">
 
-        {/* Welcome Banner (solo visible para Administrador) */}
-        {isAdmin && (
-          <div
-            className="relative overflow-hidden rounded-2xl p-6 md:p-8"
-            style={{
-              background: 'linear-gradient(135deg, #c5283d 0%, #e8445a 40%, #ff6b81 100%)',
-            }}
-          >
-            {/* Decorative elements */}
-            <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/10" />
-            <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/10" />
-            <div className="absolute top-1/2 right-1/4 w-20 h-20 rounded-full bg-white/5" />
-
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div>
-                <div className={`flex items-center gap-2 mb-2 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                  <span className="flex items-center gap-1.5 bg-white/20 border border-white/25 px-3 py-1 rounded-full text-xs font-semibold text-white">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Modo Administrador — Acceso Completo
-                  </span>
-                </div>
-                <h1 className={`text-2xl md:text-3xl font-bold text-white mb-1 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                  {getGreeting()}, {user?.name || "Administrador"} 👋
-                </h1>
-                <p className={`text-white/70 text-sm md:text-base transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                  Panel de administración municipal: dispone de acceso activo a todos los módulos y trámites del sistema.
-                </p>
-              </div>
-            </div>
-
-            {/* Stats Row */}
-            <div className={`relative z-10 grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              {stats.map((stat, i) => (
-                <div
-                  key={stat.label}
-                  className="bg-white/15 backdrop-blur-md rounded-xl p-3.5 border border-white/20 hover:bg-white/25 transition-all duration-300"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <stat.icon className="w-4 h-4 text-white/80" />
-                    <span className="text-[11px] text-white/70 font-medium">{stat.label}</span>
-                  </div>
-                  <p className="text-xl font-bold text-white">{stat.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Gestor de Descuentos para Administrador */}
-        {isAdmin && (
-          <div className={`transition-all duration-500 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <GestorDescuentos />
-          </div>
-        )}
 
         {/* Sección Principal con Trámites y Panel de Descuentos para Cliente */}
         <div className="flex flex-col lg:flex-row items-start gap-8">
@@ -287,13 +234,6 @@ export default function HomePage() {
               ))}
             </section>
           </div>
-
-          {/* Panel de Descuentos para el Cliente (lado derecho) */}
-          {!isAdmin && (
-            <div className={`w-full lg:w-auto transition-all duration-500 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <DescuentosPanel />
-            </div>
-          )}
         </div>
 
         {/* Footer info bar */}

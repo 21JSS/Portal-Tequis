@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PredialLayout } from '@/components/predial/PredialLayout'
-import { Search, AlertCircle, Loader2, Hash } from 'lucide-react'
+import { Search, AlertCircle, Loader2, Hash, ArrowRight } from 'lucide-react'
+import { useAuth } from '@/lib/context/AuthContext'
+import Link from 'next/link'
 
 function formatClave(raw: string): string {
   // Permite formato libre, mayúsculas automáticas
@@ -12,6 +14,8 @@ function formatClave(raw: string): string {
 
 export default function BusquedaPage() {
   const router = useRouter()
+  const { userRole } = useAuth()
+  const isAdmin = userRole === 'admin' || userRole === 'Administrador'
   const [clave, setClave] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -39,9 +43,28 @@ export default function BusquedaPage() {
 
   return (
     <PredialLayout currentStep={1} subtitle="Ingrese su Clave Catastral">
-      <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-sm overflow-hidden">
-        {/* Top accent */}
-        <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #c5283d, #e8445a, #ff6b81)' }} />
+      <div className="space-y-6">
+        
+        {/* Alerta para Administradores */}
+        {isAdmin && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 shadow-sm animate-fade-in-up">
+            <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <h3 className="text-sm font-bold text-amber-800">Estás en el Área Pública de Trámites</h3>
+              <p className="text-xs text-amber-700 mt-0.5">Como administrador, aquí puedes ver cómo los ciudadanos realizan sus pagos. Para gestionar predios y padrón, ve a tu panel especial.</p>
+            </div>
+            <Link 
+              href="/admin/predial"
+              className="px-4 py-2 bg-white border border-amber-300 rounded-lg text-xs font-bold text-amber-700 hover:bg-amber-100 transition-colors whitespace-nowrap flex items-center gap-1.5"
+            >
+              Ir a Gestión Predial <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-sm overflow-hidden">
+          {/* Top accent */}
+          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #c5283d, #e8445a, #ff6b81)' }} />
 
         <div className="p-8 space-y-8">
           {/* Instruction */}
@@ -116,6 +139,7 @@ export default function BusquedaPage() {
           </form>
 
         </div>
+      </div>
       </div>
     </PredialLayout>
   )

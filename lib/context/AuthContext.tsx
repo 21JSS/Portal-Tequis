@@ -1,46 +1,42 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react'
-
-export type UserRole = 'admin' | 'cliente'
-
-export interface User {
-  email: string
-  name: string
-  role: UserRole
-}
+import React, { createContext, useContext } from 'react'
+import { SessionProvider, useSession, signOut } from "next-auth/react"
 
 interface AuthContextType {
   isAuthenticated: boolean
-  user: User | null
-  login: (role?: UserRole, email?: string, name?: string) => void
+  userRole: string | null
+  login: () => void
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
+function AuthContextInner({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession()
+  
+  const isAuthenticated = status === "authenticated"
+  const userRole = session?.user?.role || null
 
-  const login = (
-    role: UserRole = 'cliente',
-    email: string = 'cliente@tequis.gob.mx',
-    name: string = role === 'admin' ? 'Administrador Municipal' : 'Ciudadano'
-  ) => {
-    setUser({ email, name, role })
-    setIsAuthenticated(true)
+  const login = () => {
+    // LoginForm ahora usa signIn de next-auth/react
   }
-
-  const logout = () => {
-    setUser(null)
-    setIsAuthenticated(false)
-  }
+  const logout = () => signOut()
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout }}>
       {children}
     </AuthContext.Provider>
+  )
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      <AuthContextInner>
+        {children}
+      </AuthContextInner>
+    </SessionProvider>
   )
 }
 
