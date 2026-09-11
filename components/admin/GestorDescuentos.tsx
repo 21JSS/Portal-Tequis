@@ -12,7 +12,8 @@ import {
   RefreshCw,
   X,
   FileText,
-  Tag
+  Tag,
+  ChevronDown
 } from 'lucide-react'
 import { Descuento } from '@/app/api/descuentos/route'
 
@@ -35,6 +36,7 @@ export function GestorDescuentos() {
   const [eliminandoId, setEliminandoId] = useState<string | null>(null)
   const [mensajeExito, setMensajeExito] = useState<string | null>(null)
   const [errorForm, setErrorForm] = useState<string | null>(null)
+  const [colapsado, setColapsado] = useState(false)
 
   // Form states
   const [titulo, setTitulo] = useState('')
@@ -145,8 +147,11 @@ export function GestorDescuentos() {
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-      {/* Header Bar */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header Bar — clickeable para colapsar/expandir */}
+      <div
+        className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer select-none"
+        onClick={() => setColapsado(!colapsado)}
+      >
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-xl bg-red-500/20 border border-red-400/30 flex items-center justify-center text-red-400 shadow-inner">
             <BadgePercent className="w-6 h-6" />
@@ -169,7 +174,7 @@ export function GestorDescuentos() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" onClick={e => e.stopPropagation()}>
           <button
             onClick={cargarDescuentos}
             disabled={loading}
@@ -183,6 +188,7 @@ export function GestorDescuentos() {
             onClick={() => {
               setMostrarForm(!mostrarForm)
               if (!mostrarForm) limpiarFormulario()
+              if (colapsado) setColapsado(false)
             }}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
               mostrarForm 
@@ -200,8 +206,28 @@ export function GestorDescuentos() {
               </>
             )}
           </button>
+
+          {/* Chevron de colapso */}
+          <button
+            onClick={() => setColapsado(!colapsado)}
+            className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors border border-white/10"
+            title={colapsado ? 'Expandir módulo' : 'Colapsar módulo'}
+          >
+            <ChevronDown
+              className={`w-5 h-5 transition-transform duration-300 ${colapsado ? 'rotate-180' : 'rotate-0'}`}
+            />
+          </button>
         </div>
       </div>
+
+      {/* Cuerpo colapsable */}
+      <div
+        style={{
+          maxHeight: colapsado ? '0px' : '9999px',
+          overflow: 'hidden',
+          transition: 'max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
 
       {/* Notifications */}
       {mensajeExito && (
@@ -425,6 +451,9 @@ export function GestorDescuentos() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Cierre del cuerpo colapsable */}
       </div>
     </div>
   )

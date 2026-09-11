@@ -56,6 +56,7 @@ export default function AdminChatPage() {
 
   // Escuchar nuevas sesiones globalmente
   useEffect(() => {
+    if (!pusherClient) return
     const channel = pusherClient.subscribe('admin-chats')
     channel.bind('nueva-sesion', () => {
       fetch('/api/chat/admin/sesiones')
@@ -66,7 +67,7 @@ export default function AdminChatPage() {
     })
 
     return () => {
-      pusherClient.unsubscribe('admin-chats')
+      pusherClient?.unsubscribe('admin-chats')
     }
   }, [])
 
@@ -80,6 +81,7 @@ export default function AdminChatPage() {
         if (data.mensajes) setMensajes(data.mensajes)
       })
 
+    if (!pusherClient) return
     const channel = pusherClient.subscribe(`chat-sesion-${sesionActiva.id}`)
     channel.bind('nuevo-mensaje', (mensaje: Mensaje) => {
       setMensajes(prev => {
@@ -89,7 +91,7 @@ export default function AdminChatPage() {
     })
 
     return () => {
-      pusherClient.unsubscribe(`chat-sesion-${sesionActiva.id}`)
+      pusherClient?.unsubscribe(`chat-sesion-${sesionActiva.id}`)
     }
   }, [sesionActiva])
 

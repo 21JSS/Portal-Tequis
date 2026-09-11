@@ -30,11 +30,13 @@ export async function POST(req: Request) {
       currentSessionId = insertSesion.insertId
       
       // Avisamos a todos los admins que hay un nuevo chat
-      await pusherServer.trigger('admin-chats', 'nueva-sesion', {
-        id: currentSessionId,
-        usuario_id: userId,
-        creado_en: new Date().toISOString()
-      })
+      if (pusherServer) {
+        await pusherServer.trigger('admin-chats', 'nueva-sesion', {
+          id: currentSessionId,
+          usuario_id: userId,
+          creado_en: new Date().toISOString()
+        })
+      }
     }
 
     if (!currentSessionId) {
@@ -58,7 +60,9 @@ export async function POST(req: Request) {
     }
 
     // Disparar evento de Pusher para el canal de esta sesión
-    await pusherServer.trigger(`chat-sesion-${currentSessionId}`, 'nuevo-mensaje', nuevoMensaje)
+    if (pusherServer) {
+      await pusherServer.trigger(`chat-sesion-${currentSessionId}`, 'nuevo-mensaje', nuevoMensaje)
+    }
 
     return NextResponse.json({ success: true, mensaje: nuevoMensaje })
   } catch (error) {

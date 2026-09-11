@@ -3,9 +3,17 @@
 import React, { createContext, useContext } from 'react'
 import { SessionProvider, useSession, signOut } from "next-auth/react"
 
+export interface AuthUser {
+  email: string
+  name: string | null
+  role: string | null
+  image?: string | null
+}
+
 interface AuthContextType {
   isAuthenticated: boolean
   userRole: string | null
+  user: AuthUser | null
   login: () => void
   logout: () => void
 }
@@ -16,15 +24,24 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   
   const isAuthenticated = status === "authenticated"
-  const userRole = session?.user?.role || null
+  const userRole = (session?.user as any)?.role || null
+
+  const user: AuthUser | null = session?.user
+    ? {
+        email: session.user.email ?? '',
+        name: session.user.name ?? null,
+        role: userRole,
+        image: session.user.image ?? null,
+      }
+    : null
 
   const login = () => {
-    // LoginForm ahora usa signIn de next-auth/react
+    // LoginForm usa signIn de next-auth/react
   }
   const logout = () => signOut()
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userRole, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

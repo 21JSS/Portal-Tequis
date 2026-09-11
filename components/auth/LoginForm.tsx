@@ -21,6 +21,20 @@ export function LoginForm() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const err = params.get('error')
+      if (err === 'OAuthSignin' || err === 'OAuthCallback') {
+        setError('Falta configurar GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET en .env.local para habilitar Google')
+        setIsGoogleLoggingIn(false)
+      } else if (err) {
+        setError(`Error al iniciar sesión: ${err}`)
+        setIsGoogleLoggingIn(false)
+      }
+    }
+  }, [])
+
   const handleCredentialsLogin = async () => {
     setError('')
     setIsLoggingIn(true)
@@ -40,8 +54,14 @@ export function LoginForm() {
   }
 
   const handleGoogleLogin = async () => {
+    setError('')
     setIsGoogleLoggingIn(true)
-    await signIn("google")
+    try {
+      await signIn("google")
+    } catch (err) {
+      setError('No se pudo conectar con Google')
+      setIsGoogleLoggingIn(false)
+    }
   }
 
   const handleRegister = async () => {
@@ -99,24 +119,24 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto relative overflow-hidden pb-10">
+    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto relative">
       <AnimatePresence>
         {isLoggingIn && <LoadingScreen />}
       </AnimatePresence>
 
-      <div className="flex flex-col items-center justify-center mb-8 w-full animate-in fade-in zoom-in-90 duration-1000 delay-300">
+      <div className="flex flex-col items-center justify-center mb-5 w-full animate-in fade-in zoom-in-90 duration-1000 delay-300">
         <img
           src="/Tequisquiapan-Presidencia-2.svg"
           alt="Tequisquiapan"
-          className="w-32 h-auto drop-shadow-2xl mb-3 transition-transform duration-700 brightness-0 invert"
+          className="w-20 sm:w-24 h-auto drop-shadow-md mb-2 transition-transform duration-700 brightness-0 invert"
         />
-        <span className={`text-2xl font-bold tracking-widest text-white/90 -mt-0.5 font-sans`}>
+        <span className="text-xl sm:text-2xl font-bold tracking-widest text-white/90 font-sans">
           Tequisquiapan
         </span>
       </div>
 
-      <div className="w-full bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 shadow-2xl transition-all duration-500">
-        <div className="flex flex-col gap-5">
+      <div className="w-full bg-white/10 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/25 shadow-xl shadow-black/10 transition-all duration-500">
+        <div className="flex flex-col gap-4 sm:gap-5">
           
 
 
@@ -226,7 +246,7 @@ export function LoginForm() {
               <button
                 onClick={handleGoogleLogin}
                 disabled={isLoggingIn || isGoogleLoggingIn}
-                className="w-full bg-white/10 text-white font-bold py-3 rounded-xl border border-white/20 hover:bg-white/20 transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-3 disabled:opacity-70"
+                className="w-full bg-white/10 text-white font-bold py-3 rounded-xl border border-white/20 hover:bg-white/20 transition-all transform active:scale-95 shadow-sm hover:shadow flex items-center justify-center gap-3 disabled:opacity-70"
               >
                 <svg viewBox="0 0 24 24" className="w-5 h-5 bg-white rounded-full p-0.5">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

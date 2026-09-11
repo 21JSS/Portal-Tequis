@@ -37,7 +37,7 @@ export function ChatWidget() {
 
   // Suscribirse a Pusher
   useEffect(() => {
-    if (!sesionId) return
+    if (!sesionId || !pusherClient) return
 
     const channel = pusherClient.subscribe(`chat-sesion-${sesionId}`)
     channel.bind('nuevo-mensaje', (mensaje: Mensaje) => {
@@ -49,7 +49,7 @@ export function ChatWidget() {
     })
 
     return () => {
-      pusherClient.unsubscribe(`chat-sesion-${sesionId}`)
+      pusherClient?.unsubscribe(`chat-sesion-${sesionId}`)
     }
   }, [sesionId])
 
