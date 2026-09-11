@@ -458,6 +458,139 @@
 }
 
 /* ═══════════════════════════════════════════
+   ANIMACIONES DE CLIMA — Lluvia y Rayos
+   ═══════════════════════════════════════════ */
+
+@keyframes rain-fall {
+  0% {
+    transform: translateY(-8px) scaleY(0.8);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  85% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateY(22px) scaleY(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes lightning-flash {
+  0%, 82%, 86%, 92%, 100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  83%, 85%, 88%, 91% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes lightning-flash-bg {
+  0%, 82%, 86%, 92%, 100% {
+    background-color: transparent;
+  }
+  83%, 85%, 88%, 91% {
+    background-color: rgba(56, 189, 248, 0.18);
+  }
+}
+
+@keyframes cloud-drift {
+  0%, 100% { transform: translateX(0px) translateY(0px); }
+  30%       { transform: translateX(2px)  translateY(-1px); }
+  60%       { transform: translateX(-1px) translateY(1px); }
+}
+
+@keyframes cloud-sway {
+  0%, 100% { transform: translateX(0px) scale(1); }
+  40%       { transform: translateX(3px)  scale(1.02); }
+  70%       { transform: translateX(-2px) scale(0.98); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Sol: pulso cálido + leve escala ── */
+@keyframes sun-breathe {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 4px rgba(251,191,36,0.5));
+  }
+  25% {
+    transform: scale(1.12) rotate(8deg);
+    filter: drop-shadow(0 0 10px rgba(251,191,36,0.85));
+  }
+  50% {
+    transform: scale(1.06) rotate(15deg);
+    filter: drop-shadow(0 0 14px rgba(251,191,36,0.7));
+  }
+  75% {
+    transform: scale(1.1) rotate(22deg);
+    filter: drop-shadow(0 0 8px rgba(251,191,36,0.9));
+  }
+}
+
+/* ── Luna: flotación suave ── */
+@keyframes moon-float {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); filter: drop-shadow(0 0 4px rgba(165,180,252,0.4)); }
+  50%       { transform: translateY(-3px) rotate(5deg); filter: drop-shadow(0 0 8px rgba(165,180,252,0.7)); }
+}
+
+/* ── Nieve: caída giratoria suave ── */
+@keyframes snow-drift {
+  0%, 100% { transform: translateY(0px) rotate(0deg)   translateX(0px); }
+  25%       { transform: translateY(-2px) rotate(45deg)  translateX(2px); }
+  50%       { transform: translateY(1px)  rotate(90deg)  translateX(-1px); }
+  75%       { transform: translateY(-1px) rotate(135deg) translateX(1px); }
+}
+
+/* ── Niebla: pulso de opacidad ── */
+@keyframes fog-pulse {
+  0%, 100% { opacity: 0.6; transform: translateX(0px)  scaleX(1); }
+  50%       { opacity: 0.9; transform: translateX(2px)  scaleX(1.04); }
+}
+
+/* ── Ícono de lluvia: balanceo y caída suave ── */
+@keyframes rain-icon-sway {
+  0%, 100% { transform: rotate(0deg)   translateY(0px); }
+  25%       { transform: rotate(-4deg) translateY(-1px); }
+  50%       { transform: rotate(0deg)   translateY(1px); }
+  75%       { transform: rotate(4deg)  translateY(-1px); }
+}
+
+/* ── Tormenta: sacudida + brillo azulado ── */
+@keyframes thunder-shake {
+  0%, 90%, 100% { transform: translateX(0) rotate(0deg); filter: drop-shadow(0 0 4px rgba(99,102,241,0.4)); }
+  91%            { transform: translateX(-2px) rotate(-2deg); filter: drop-shadow(0 0 12px rgba(251,191,36,0.9)); }
+  93%            { transform: translateX(2px) rotate(2deg);  filter: drop-shadow(0 0 18px rgba(251,191,36,1)); }
+  95%            { transform: translateX(-1px) rotate(-1deg); filter: drop-shadow(0 0 10px rgba(251,191,36,0.8)); }
+  97%            { transform: translateX(1px) rotate(1deg);  filter: drop-shadow(0 0 6px rgba(99,102,241,0.5)); }
+}
+
+.animate-rain-fall-1 { animation: rain-fall 0.7s  linear infinite; }
+.animate-rain-fall-2 { animation: rain-fall 0.85s linear infinite 0.22s; }
+.animate-rain-fall-3 { animation: rain-fall 0.65s linear infinite 0.4s; }
+.animate-rain-fall-4 { animation: rain-fall 0.9s  linear infinite 0.12s; }
+.animate-rain-fall-5 { animation: rain-fall 0.75s linear infinite 0.3s; }
+
+.animate-lightning-bolt     { animation: lightning-flash 3.2s ease-in-out infinite; }
+.animate-lightning-flash-bg { animation: lightning-flash-bg 3.2s ease-in-out infinite; }
+.animate-cloud-drift  { animation: cloud-drift  3.5s  ease-in-out infinite; }
+.animate-cloud-sway   { animation: cloud-sway   4.5s  ease-in-out infinite; }
+.animate-spin-slow    { animation: spin-slow    12s   linear      infinite; }
+.animate-sun-breathe  { animation: sun-breathe  4s    ease-in-out infinite; }
+.animate-moon-float   { animation: moon-float   5s    ease-in-out infinite; }
+.animate-snow-drift   { animation: snow-drift   6s    ease-in-out infinite; }
+.animate-fog-pulse    { animation: fog-pulse    4s    ease-in-out infinite; }
+.animate-rain-icon    { animation: rain-icon-sway 2.5s ease-in-out infinite; }
+.animate-thunder-icon { animation: thunder-shake  4s  ease-in-out infinite; }
+
+/* ═══════════════════════════════════════════
    PRINT STYLES — Recibo Predial
    ═══════════════════════════════════════════ */
 

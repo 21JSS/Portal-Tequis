@@ -1,0 +1,35 @@
+[
+  {
+    "id": "desc-1789096246074-w3rl",
+    "titulo": "Pago por diciembre",
+    "descripcion": "",
+    "porcentaje": 10,
+    "tramiteAsociado": "Pago de Predial",
+    "vigencia": "21 de diciembre del 2026",
+    "codigo": "PREDIAL2026",
+    "activo": true,
+    "creadoEn": "2026-09-11T03:10:46.074Z"
+  },
+  {
+    "id": "desc-predial-pronto-pago",
+    "titulo": "15% Pronto Pago Predial",
+    "descripcion": "Aplica pagando tu impuesto predial anual en una sola exhibición.",
+    "porcentaje": 15,
+    "tramiteAsociado": "Pago de Predial",
+    "vigencia": "31 de Marzo, 2026",
+    "codigo": "PREDIAL15",
+    "activo": true,
+    "creadoEn": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "desc-recargos-regularizacion",
+    "titulo": "100% Condonación de Recargos",
+    "descripcion": "Condonación total de multas y recargos por mora en ejercicio fiscal anterior.",
+    "porcentaje": 100,
+    "tramiteAsociado": "Pago de Predial",
+    "vigencia": "Vigencia permanente",
+    "codigo": "RECARGOS0",
+    "activo": true,
+    "creadoEn": "2026-01-15T00:00:00.000Z"
+  }
+]

@@ -3,6 +3,7 @@
 import { Search, Bell, HelpCircle, Keyboard, ShieldCheck, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/lib/context/AuthContext"
+import { WeatherWidget } from "@/components/ui/WeatherWidget"
 
 export function Topbar() {
   const { user } = useAuth()
@@ -24,12 +25,18 @@ export function Topbar() {
 
   return (
     <header className="h-16 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl flex items-center justify-between px-8 sticky top-0 z-10 animate-slide-down">
-      {/* Left: Date & Time */}
-      <div className="flex items-center gap-3">
+      {/* Left: Date & Time + Weather */}
+      <div className="flex items-center gap-3.5">
         <div className="text-sm">
           <p className="font-semibold text-slate-800 capitalize">{currentDate}</p>
           <p className="text-xs text-slate-400">{currentTime}</p>
         </div>
+
+        {/* Separator */}
+        <div className="hidden sm:block h-7 w-px bg-slate-200/80" />
+
+        {/* Weather Widget */}
+        <WeatherWidget />
       </div>
 
       {/* Right Actions */}
