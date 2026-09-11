@@ -27,24 +27,24 @@ export default function ReciboPage() {
   const searchParams = useSearchParams()
   const printRef = useRef<HTMLDivElement>(null)
 
-  const folio      = searchParams.get('folio') || ''
-  const fecha      = searchParams.get('fecha') || ''
-  const total      = parseFloat(searchParams.get('total') || '0')
-  const metodo     = (searchParams.get('metodo') || 'tarjeta') as 'tarjeta' | 'referencia'
-  const clave      = searchParams.get('clave') || ''
-  const nombre     = searchParams.get('nombre') || ''
-  const email      = searchParams.get('email') || ''
+  const folio = searchParams.get('folio') || ''
+  const fecha = searchParams.get('fecha') || ''
+  const total = parseFloat(searchParams.get('total') || '0')
+  const metodo = (searchParams.get('metodo') || 'tarjeta') as 'tarjeta' | 'referencia'
+  const clave = searchParams.get('clave') || ''
+  const nombre = searchParams.get('nombre') || ''
+  const email = searchParams.get('email') || ''
   const referencia = searchParams.get('referencia') || ''
-  const banco      = searchParams.get('banco') || ''
-  const convenio   = searchParams.get('convenio') || ''
-  const vigencia   = searchParams.get('vigencia') || ''
+  const banco = searchParams.get('banco') || ''
+  const convenio = searchParams.get('convenio') || ''
+  const vigencia = searchParams.get('vigencia') || ''
 
   function handlePrint() {
     window.print()
   }
 
   function handleCopy(text: string) {
-    navigator.clipboard.writeText(text).catch(() => {})
+    navigator.clipboard.writeText(text).catch(() => { })
   }
 
   return (
@@ -57,24 +57,40 @@ export default function ReciboPage() {
         ]} />
 
         {/* Print area */}
-        <div ref={printRef} id="recibo-predial">
+        <div ref={printRef} id="recibo-predial" className="print:pt-0">
+
+          {/* Header Logo - Visible only on print/PDF */}
+          <div className="hidden print:flex flex-col items-center justify-center pt-0 pb-2 border-b border-slate-200 mb-4">
+            <img
+              src="/Logo-PDF-Tequisquiapan.svg"
+              alt="Logo Tequisquiapan"
+              className="h-40 w-auto block"
+              style={{ marginBottom: '10px' }}
+            />
+            <p className="text-sm font-bold text-slate-800 uppercase tracking-wide z-10">
+              H. Ayuntamiento de Tequisquiapan, Qro.
+            </p>
+            <p className="text-xs text-slate-500 italic z-10">
+              Recibo Oficial de Pago de Impuesto Predial
+            </p>
+          </div>
 
           {/* Success banner */}
           <div
-            className="rounded-2xl p-8 text-center text-white relative overflow-hidden"
+            className="rounded-2xl p-6 text-center text-white relative overflow-hidden mb-4"
             style={{ background: 'linear-gradient(135deg, #c5283d 0%, #e8445a 40%, #ff6b81 100%)' }}
           >
             <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
 
             <div className="relative z-10">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8 text-white" />
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3">
+                <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold mb-1">
+              <h1 className="text-xl font-bold mb-1">
                 {metodo === 'referencia' ? '¡Referencia Generada!' : '¡Pago Exitoso!'}
               </h1>
-              <p className="text-white/80 text-sm">
+              <p className="text-white/80 text-xs">
                 {metodo === 'referencia'
                   ? 'Pague con la referencia bancaria en cualquier banco o OXXO.'
                   : 'Su pago de predial ha sido registrado correctamente.'}
@@ -83,16 +99,15 @@ export default function ReciboPage() {
           </div>
 
           {/* Folio */}
-          <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-sm p-6 space-y-5 mt-5">
+          <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-sm p-5 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Folio de Pago</p>
-                <p className="text-2xl font-bold font-mono text-slate-900 mt-0.5">{folio}</p>
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Folio de Pago</p>
+                <p className="text-xl font-bold font-mono text-slate-900 mt-0.5">{folio}</p>
               </div>
-              <span className={`px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 ${
-                metodo === 'tarjeta' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
-              }`}>
-                {metodo === 'tarjeta' ? <CreditCard className="w-3.5 h-3.5" /> : <Landmark className="w-3.5 h-3.5" />}
+              <span className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5 ${metodo === 'tarjeta' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                }`}>
+                {metodo === 'tarjeta' ? <CreditCard className="w-3 h-3" /> : <Landmark className="w-3 h-3" />}
                 {metodo === 'tarjeta' ? 'Tarjeta' : 'Referencia Bancaria'}
               </span>
             </div>
@@ -105,9 +120,9 @@ export default function ReciboPage() {
                 { label: 'Correo', value: email },
                 { label: 'Total Pagado', value: formatMoneda(total), bold: true },
               ].map(r => (
-                <div key={r.label} className="flex justify-between py-2.5">
-                  <span className="text-slate-500">{r.label}</span>
-                  <span className={r.bold ? 'font-bold text-[#c5283d] text-base' : 'font-medium text-slate-800'}>{r.value}</span>
+                <div key={r.label} className="flex justify-between py-2">
+                  <span className="text-slate-500 text-xs">{r.label}</span>
+                  <span className={r.bold ? 'font-bold text-[#8e1432] text-sm' : 'font-medium text-slate-800 text-xs'}>{r.value}</span>
                 </div>
               ))}
             </div>
@@ -157,7 +172,7 @@ export default function ReciboPage() {
             onClick={handlePrint}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl border-2 border-slate-200 text-slate-700 text-sm font-semibold hover:border-[#c5283d] hover:text-[#c5283d] transition-all duration-200"
           >
-            <Printer className="w-4 h-4" />
+            <Printer className="w-3 h-3" style={{ color: '#8e1432' }} />
             Imprimir / Guardar PDF
           </button>
           <button

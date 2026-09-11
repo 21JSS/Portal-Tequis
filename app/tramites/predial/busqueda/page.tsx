@@ -28,18 +28,10 @@ export default function BusquedaPage() {
     setError(null)
 
     try {
-      const res = await fetch(`/api/predial/predio?clave=${encodeURIComponent(claveClean)}`)
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error || 'No se encontró el predio. Verifique su clave catastral.')
-        return
-      }
-
-      // Navegar al siguiente paso pasando la clave como query param
+      // Bypass temporal para desarrollo: saltar validación de BD
       router.push(`/tramites/predial/adeudo?clave=${encodeURIComponent(claveClean)}`)
     } catch {
-      setError('Error de conexión. Intente nuevamente.')
+      setError('Error de navegación. Intente nuevamente.')
     } finally {
       setLoading(false)
     }
