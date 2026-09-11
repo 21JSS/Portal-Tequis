@@ -20,16 +20,5 @@
     "codigo": "PREDIAL15",
     "activo": true,
     "creadoEn": "2026-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "desc-recargos-regularizacion",
-    "titulo": "100% Condonación de Recargos",
-    "descripcion": "Condonación total de multas y recargos por mora en ejercicio fiscal anterior.",
-    "porcentaje": 100,
-    "tramiteAsociado": "Pago de Predial",
-    "vigencia": "Vigencia permanente",
-    "codigo": "RECARGOS0",
-    "activo": true,
-    "creadoEn": "2026-01-15T00:00:00.000Z"
   }
 ]
