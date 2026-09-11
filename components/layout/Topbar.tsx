@@ -1,9 +1,13 @@
 'use client'
 
-import { Search, Bell, HelpCircle, Keyboard } from "lucide-react"
+import { Search, Bell, HelpCircle, Keyboard, ShieldCheck, User } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useAuth } from "@/lib/context/AuthContext"
 
 export function Topbar() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+
   const [currentTime, setCurrentTime] = useState<string>("")
   const [currentDate, setCurrentDate] = useState<string>("")
 
@@ -42,6 +46,16 @@ export function Topbar() {
             <Keyboard className="w-3 h-3" />
             <span>Ctrl+K</span>
           </div>
+        </div>
+
+        {/* User Role Badge */}
+        <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
+          isAdmin 
+            ? 'bg-amber-50 text-amber-900 border-amber-200/90'
+            : 'bg-slate-100 text-slate-700 border-slate-200'
+        }`}>
+          {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-amber-600" /> : <User className="w-3.5 h-3.5 text-slate-500" />}
+          <span>{isAdmin ? 'Administrador' : 'Ciudadano'}</span>
         </div>
 
         {/* Notifications */}

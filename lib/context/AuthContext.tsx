@@ -2,22 +2,43 @@
 
 import React, { createContext, useContext, useState } from 'react'
 
+export type UserRole = 'admin' | 'cliente'
+
+export interface User {
+  email: string
+  name: string
+  role: UserRole
+}
+
 interface AuthContextType {
   isAuthenticated: boolean
-  login: () => void
+  user: User | null
+  login: (role?: UserRole, email?: string, name?: string) => void
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(true) // Por defecto true para que veas tu dashboard, luego lo cambiaremos
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
 
-  const login = () => setIsAuthenticated(true)
-  const logout = () => setIsAuthenticated(false)
+  const login = (
+    role: UserRole = 'cliente',
+    email: string = 'cliente@tequis.gob.mx',
+    name: string = role === 'admin' ? 'Administrador Municipal' : 'Ciudadano'
+  ) => {
+    setUser({ email, name, role })
+    setIsAuthenticated(true)
+  }
+
+  const logout = () => {
+    setUser(null)
+    setIsAuthenticated(false)
+  }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

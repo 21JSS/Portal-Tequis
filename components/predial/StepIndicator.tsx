@@ -23,9 +23,9 @@ export function StepIndicator({ currentStep }: { currentStep: number }) {
     <div className="w-full">
       <div className="flex items-center justify-between relative">
         {/* Connecting line */}
-        <div className="absolute top-4 left-0 right-0 h-0.5 bg-slate-200 z-0" />
+        <div className="absolute top-3.5 left-0 right-0 h-1 bg-slate-200 rounded-full z-0" />
         <div
-          className="absolute top-4 left-0 h-0.5 bg-linear-to-r from-[#c5283d] to-[#e8445a] z-0 transition-all duration-700 ease-out"
+          className="absolute top-3.5 left-0 h-1 bg-linear-to-r from-emerald-500 to-emerald-400 rounded-full z-0 transition-all duration-700 ease-out shadow-xs shadow-emerald-500/30"
           style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
         />
 

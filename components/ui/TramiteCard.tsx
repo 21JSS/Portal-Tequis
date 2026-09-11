@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { ChevronRight, Home, Store, FileText, Users, MapPin, BookOpen, Rocket, ScrollText } from "lucide-react"
+import { ChevronRight, Home, Store, FileText, Users, MapPin, BookOpen, Rocket, ScrollText, Lock, Sparkles } from "lucide-react"
 
 interface TramiteProps {
   id: string
@@ -8,6 +8,7 @@ interface TramiteProps {
   categoria: string
   estado: string
   estadoColor?: "green" | "blue" | "purple" | "orange" | "gray"
+  disponible?: boolean
   imagen: string
   alSeleccionar: () => void
 }
@@ -34,24 +35,17 @@ const categoryGradients: Record<string, string> = {
   "registro-civil": "var(--gradient-registro)",
 }
 
-const hoverShadows: Record<string, string> = {
-  green: "hover:shadow-[0_8px_30px_-4px_rgba(16,185,129,0.25)]",
-  blue: "hover:shadow-[0_8px_30px_-4px_rgba(59,130,246,0.25)]",
-  purple: "hover:shadow-[0_8px_30px_-4px_rgba(139,92,246,0.25)]",
-  orange: "hover:shadow-[0_8px_30px_-4px_rgba(249,115,22,0.25)]",
-  gray: "hover:shadow-[0_8px_30px_-4px_rgba(100,116,139,0.2)]",
-}
-
-export function TramiteCard({ 
+export function TramiteCard({
   id,
-  titulo, 
-  descripcion, 
-  categoria, 
-  estado, 
+  titulo,
+  descripcion,
+  categoria,
+  estado,
   estadoColor = "green",
-  alSeleccionar 
+  disponible = true,
+  alSeleccionar
 }: TramiteProps) {
-  
+
   const colorStyles = {
     green: "border-emerald-200 text-emerald-700 bg-emerald-50",
     blue: "border-blue-200 text-blue-700 bg-blue-50",
@@ -72,49 +66,72 @@ export function TramiteCard({
   const selectedDotColor = dotColors[estadoColor] || dotColors.green
   const Icon = categoryIcons[id] || Home
   const gradient = categoryGradients[id] || categoryGradients.predial
-  const hoverShadow = hoverShadows[estadoColor] || hoverShadows.green
 
   return (
-    <Card className={`card-hover-lift border-slate-200/80 overflow-hidden flex flex-col bg-white group cursor-pointer ${hoverShadow}`} onClick={alSeleccionar}>
-      {/* Gradient Header with Icon */}
-      <div 
-        className="relative h-36 w-full gradient-shimmer-overlay flex items-center justify-center"
-        style={{ background: gradient }}
-      >
-        <Icon className="w-12 h-12 text-white/90 group-hover:scale-110 transition-transform duration-500 ease-out" strokeWidth={1.5} />
-        
-        {/* Category badge */}
-        <div className="absolute top-3.5 left-3.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-semibold text-white border border-white/20">
-          {categoria}
+    <Card
+      className={`relative overflow-hidden flex flex-col transition-all duration-300 ${disponible
+        ? "bg-white border-2 border-[#c5283d]/50 shadow-xl shadow-red-500/10 ring-2 ring-[#c5283d]/20 hover:border-[#c5283d] hover:ring-8 hover:ring-[#c5283d]/25 hover:shadow-2xl hover:shadow-red-500/25 hover:scale-[1.03] cursor-pointer group"
+        : "bg-slate-50/70 border-slate-200/60 shadow-xs cursor-default select-none"
+        }`}
+      onClick={() => {
+        if (disponible) alSeleccionar()
+      }}
+    >
+      {/* Badge destacado para el módulo disponible */}
+      {disponible && (
+        <div className="absolute top-3 right-3 z-20 bg-white/95 text-[#c5283d] font-bold text-[10px] px-2.5 py-1 rounded-full shadow-md border border-red-200 flex items-center gap-1.5 animate-pulse">
+          <Sparkles className="w-3 h-3 text-[#c5283d]" />
+          <span>Habilitado</span>
+        </div>
+      )}
+
+      {/* Contenido interior de la tarjeta con blur disminuido */}
+      <div className={`flex flex-col flex-1 ${!disponible ? "filter blur-[1.2px] opacity-80" : ""}`}>
+        {/* Gradient Header with Icon */}
+        <div
+          className="relative h-36 w-full gradient-shimmer-overlay flex items-center justify-center transition-all"
+          style={{ background: gradient }}
+        >
+          <Icon className={`w-12 h-12 text-white/90 transition-transform duration-500 ease-out ${disponible ? "group-hover:scale-110" : ""}`} strokeWidth={1.5} />
+
+          {/* Category badge */}
+          <div className="absolute top-3.5 left-3.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-semibold text-white border border-white/20">
+            {categoria}
+          </div>
+
+          {/* Decorative circles */}
+          <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
+          <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/10" />
         </div>
 
-        {/* Decorative circles */}
-        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
-        <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/10" />
-      </div>
+        <CardHeader className="pb-1.5 pt-5">
+          <CardTitle className={`text-lg font-bold text-slate-900 transition-colors ${disponible ? "group-hover:text-[#c5283d]" : ""}`}>
+            {titulo}
+          </CardTitle>
+        </CardHeader>
 
-      <CardHeader className="pb-1.5 pt-5">
-        <CardTitle className="text-lg font-bold text-slate-900 group-hover:text-slate-700 transition-colors">{titulo}</CardTitle>
-      </CardHeader>
-      
-      <CardContent className="pb-5 flex-1">
-        <p className="text-[13px] text-slate-500 leading-relaxed line-clamp-3">{descripcion}</p>
-      </CardContent>
-      
-      {/* Footer / Actions */}
-      <CardFooter className="pt-3.5 pb-4 border-t border-slate-100 flex items-center justify-between">
-        <span className={`text-[11px] font-medium px-2.5 py-1 border rounded-full flex items-center gap-1.5 ${selectedColorStyle}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${selectedDotColor} ${estadoColor === 'green' ? 'animate-pulse-dot' : ''}`} />
-          {estado}
-        </span>
-        
-        <button 
-          className="flex items-center text-sm font-semibold text-[#c5283d] hover:text-red-800 transition-all group/btn"
-        >
-          Acceder 
-          <ChevronRight className="w-4 h-4 ml-0.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
-        </button>
-      </CardFooter>
+        <CardContent className="pb-5 flex-1">
+          <p className="text-[13px] text-slate-500 leading-relaxed line-clamp-3">{descripcion}</p>
+        </CardContent>
+
+        {/* Footer / Actions */}
+        <CardFooter className="pt-3.5 pb-4 border-t border-slate-100 flex items-center justify-between">
+          <span className={`text-[11px] font-medium px-2.5 py-1 border rounded-full flex items-center gap-1.5 ${selectedColorStyle}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${selectedDotColor} ${estadoColor === 'green' ? 'animate-pulse-dot' : ''}`} />
+            {estado}
+          </span>
+
+          {disponible ? (
+            <button
+              type="button"
+              className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-linear-to-r from-[#c5283d] to-[#e8445a] text-white text-xs font-bold shadow-md shadow-red-500/25 hover:shadow-lg hover:shadow-red-500/35 hover:scale-105 transition-all group/btn"
+            >
+              Acceder
+              <ChevronRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+            </button>
+          ) : null}
+        </CardFooter>
+      </div>
     </Card>
   )
 }

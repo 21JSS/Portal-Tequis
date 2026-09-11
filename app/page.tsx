@@ -5,85 +5,11 @@ import { AnimatedCard } from "@/components/ui/AnimatedCard"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Activity, CheckCircle2, Clock, Zap, Sparkles } from "lucide-react"
+import { Activity, CheckCircle2, Clock, Zap, Sparkles, ShieldCheck, User as UserIcon } from "lucide-react"
+import { useAuth } from "@/lib/context/AuthContext"
 
 // Types for our array
 type EstadoColor = "green" | "blue" | "purple" | "orange" | "gray"
-
-const listaTramites = [
-  {
-    id: "predial",
-    titulo: "Pago de Predial",
-    descripcion: "Aquí podrá realizar el pago del impuesto predial de manera rápida y segura, mediante su Clave Catastral.",
-    categoria: "Clave Catastral",
-    estado: "En Línea 24/7",
-    estadoColor: "green" as EstadoColor,
-    imagen: ""
-  },
-  {
-    id: "licencias",
-    titulo: "Licencias de Funcionamiento",
-    descripcion: "En este módulo podrá realizar el Alta o Refrendo de las Licencias de Funcionamiento otorgadas por el municipio.",
-    categoria: "Comercio",
-    estado: "Alta y Refrendo",
-    estadoColor: "blue" as EstadoColor,
-    imagen: ""
-  },
-  {
-    id: "traslado",
-    titulo: "Traslado de Dominio",
-    descripcion: "Realice la captura y pago de las operaciones de Traslados de Dominio posteriores al 27/01/2012.",
-    categoria: "Notarial",
-    estado: "Captura y Pago",
-    estadoColor: "purple" as EstadoColor,
-    imagen: ""
-  },
-  {
-    id: "atencion",
-    titulo: "Atención Ciudadana",
-    descripcion: "Proporcione requisitos de los diferentes trámites a los ciudadanos y Registre la recepción de nuevas solicitudes.",
-    categoria: "Ventanilla",
-    estado: "Recepción",
-    estadoColor: "orange" as EstadoColor,
-    imagen: ""
-  },
-  {
-    id: "catastral",
-    titulo: "Consulta Catastral",
-    descripcion: "En esta opción encontrará la relación de predios y propietarios así como su administración.",
-    categoria: "Predios",
-    estado: "Padrón Oficial",
-    estadoColor: "blue" as EstadoColor,
-    imagen: ""
-  },
-  {
-    id: "manuales",
-    titulo: "Manuales de Uso",
-    descripcion: "En esta sección Usted podrá descargar los diferentes manuales de uso para los diferentes trámites ofrecidos.",
-    categoria: "Descargas",
-    estado: "PDF / Guías",
-    estadoColor: "gray" as EstadoColor,
-    imagen: ""
-  },
-  {
-    id: "sare",
-    titulo: "SARE",
-    descripcion: "Mediante esta opción podrán controlarse las solicitudes del Sistema de Apertura Rápida de Empresas.",
-    categoria: "Apertura Rápida",
-    estado: "Empresarial",
-    estadoColor: "green" as EstadoColor,
-    imagen: ""
-  },
-  {
-    id: "registro-civil",
-    titulo: "Registro Civil",
-    descripcion: "Registro Civil. Consulta, expedición de actas y gestión de trámites registrales del Municipio.",
-    categoria: "Actas y Registros",
-    estado: "Certificaciones",
-    estadoColor: "gray" as EstadoColor,
-    imagen: ""
-  }
-]
 
 function getGreeting(): string {
   const hour = new Date().getHours()
@@ -92,15 +18,11 @@ function getGreeting(): string {
   return "Buenas noches"
 }
 
-const stats = [
-  { label: "Servicios Totales", value: "8", icon: Activity, color: "text-blue-600", bgColor: "bg-blue-50", borderColor: "border-blue-100" },
-  { label: "En Línea Ahora", value: "6", icon: CheckCircle2, color: "text-emerald-600", bgColor: "bg-emerald-50", borderColor: "border-emerald-100" },
-  { label: "Tiempo Promedio", value: "~5 min", icon: Clock, color: "text-amber-600", bgColor: "bg-amber-50", borderColor: "border-amber-100" },
-  { label: "Disponibilidad", value: "24/7", icon: Zap, color: "text-purple-600", bgColor: "bg-purple-50", borderColor: "border-purple-100" },
-]
-
 export default function HomePage() {
   const router = useRouter()
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+
   const [filtroActivo, setFiltroActivo] = useState("Todos (8)")
   const [mounted, setMounted] = useState(false)
 
@@ -108,11 +30,148 @@ export default function HomePage() {
     setMounted(true)
   }, [])
 
-  const manejarTramite = (id: string) => {
-    router.push(`/tramites/${id}`)
+  const listaTramites = [
+    {
+      id: "predial",
+      titulo: "Pago de Predial",
+      descripcion: "Aquí podrá realizar el pago del impuesto predial de manera rápida y segura, mediante su Clave Catastral.",
+      categoria: "Clave Catastral",
+      estado: "En Línea 24/7",
+      estadoColor: "green" as EstadoColor,
+      disponible: true, // Disponible tanto para admin como para cliente
+      imagen: ""
+    },
+    {
+      id: "licencias",
+      titulo: "Licencias de Funcionamiento",
+      descripcion: "En este módulo podrá realizar el Alta o Refrendo de las Licencias de Funcionamiento otorgadas por el municipio.",
+      categoria: "Comercio",
+      estado: isAdmin ? "Alta y Refrendo" : "Próximamente",
+      estadoColor: (isAdmin ? "blue" : "gray") as EstadoColor,
+      disponible: isAdmin, // Solo admin
+      imagen: ""
+    },
+    {
+      id: "traslado",
+      titulo: "Traslado de Dominio",
+      descripcion: "Realice la captura y pago de las operaciones de Traslados de Dominio posteriores al 27/01/2012.",
+      categoria: "Notarial",
+      estado: isAdmin ? "Captura y Pago" : "Próximamente",
+      estadoColor: (isAdmin ? "purple" : "gray") as EstadoColor,
+      disponible: isAdmin,
+      imagen: ""
+    },
+    {
+      id: "atencion",
+      titulo: "Atención Ciudadana",
+      descripcion: "Proporcione requisitos de los diferentes trámites a los ciudadanos y Registre la recepción de nuevas solicitudes.",
+      categoria: "Ventanilla",
+      estado: isAdmin ? "Recepción" : "Próximamente",
+      estadoColor: (isAdmin ? "orange" : "gray") as EstadoColor,
+      disponible: isAdmin,
+      imagen: ""
+    },
+    {
+      id: "catastral",
+      titulo: "Consulta Catastral",
+      descripcion: "En esta opción encontrará la relación de predios y propietarios así como su administración.",
+      categoria: "Predios",
+      estado: isAdmin ? "Padrón Oficial" : "Próximamente",
+      estadoColor: (isAdmin ? "blue" : "gray") as EstadoColor,
+      disponible: isAdmin,
+      imagen: ""
+    },
+    {
+      id: "manuales",
+      titulo: "Manuales de Uso",
+      descripcion: "En esta sección Usted podrá descargar los diferentes manuales de uso para los diferentes trámites ofrecidos.",
+      categoria: "Descargas",
+      estado: isAdmin ? "PDF / Guías" : "Próximamente",
+      estadoColor: (isAdmin ? "gray" : "gray") as EstadoColor,
+      disponible: isAdmin,
+      imagen: ""
+    },
+    {
+      id: "sare",
+      titulo: "SARE",
+      descripcion: "Mediante esta opción podrán controlarse las solicitudes del Sistema de Apertura Rápida de Empresas.",
+      categoria: "Apertura Rápida",
+      estado: isAdmin ? "Empresarial" : "Próximamente",
+      estadoColor: (isAdmin ? "green" : "gray") as EstadoColor,
+      disponible: isAdmin,
+      imagen: ""
+    },
+    {
+      id: "registro-civil",
+      titulo: "Registro Civil",
+      descripcion: "Registro Civil. Consulta, expedición de actas y gestión de trámites registrales del Municipio.",
+      categoria: "Actas y Registros",
+      estado: isAdmin ? "Certificaciones" : "Próximamente",
+      estadoColor: (isAdmin ? "purple" : "gray") as EstadoColor,
+      disponible: isAdmin,
+      imagen: ""
+    }
+  ]
+
+  const stats = [
+    {
+      label: "Servicios Totales",
+      value: "8",
+      icon: Activity,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-100"
+    },
+    {
+      label: "En Línea Ahora",
+      value: isAdmin ? "8" : "1",
+      icon: CheckCircle2,
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      borderColor: "border-emerald-100"
+    },
+    {
+      label: isAdmin ? "Modo Activo" : "Próximamente",
+      value: isAdmin ? "Admin" : "7",
+      icon: isAdmin ? ShieldCheck : Clock,
+      color: "text-amber-600",
+      bgColor: "bg-amber-50",
+      borderColor: "border-amber-100"
+    },
+    {
+      label: "Disponibilidad",
+      value: "24/7",
+      icon: Zap,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-100"
+    },
+  ]
+
+  const manejarTramite = (id: string, disponible: boolean) => {
+    if (!disponible) return
+    if (id === 'predial') {
+      router.push('/tramites/predial/busqueda')
+    } else {
+      router.push(`/tramites/${id}`)
+    }
   }
 
-  const filtros = ["Todos (8)", "Impuestos y Predial", "Empresas y Comercio"]
+  const filtros = isAdmin 
+    ? ["Todos (8)", "Impuestos y Predial", "Empresas y Comercio"]
+    : ["Todos (8)", "Disponibles (1)", "Próximamente (7)"]
+
+  const tramitesFiltrados = listaTramites.filter(t => {
+    if (!isAdmin) {
+      if (filtroActivo === "Disponibles (1)") return t.disponible
+      if (filtroActivo === "Próximamente (7)") return !t.disponible
+      return true
+    } else {
+      if (filtroActivo === "Impuestos y Predial") return t.id === 'predial' || t.id === 'catastral' || t.id === 'traslado'
+      if (filtroActivo === "Empresas y Comercio") return t.id === 'licencias' || t.id === 'sare'
+      return true
+    }
+  })
 
   return (
     <DashboardLayout>
@@ -133,14 +192,24 @@ export default function HomePage() {
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <div className={`flex items-center gap-2 mb-2 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                <Sparkles className="w-5 h-5 text-white/80" />
-                <span className="text-white/80 text-sm font-medium">Ventanilla Digital Municipal</span>
+                {isAdmin ? (
+                  <span className="flex items-center gap-1.5 bg-white/20 border border-white/25 px-3 py-1 rounded-full text-xs font-semibold text-white">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Modo Administrador — Acceso Completo
+                  </span>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5 text-white/80" />
+                    <span className="text-white/80 text-sm font-medium">Ventanilla Digital Ciudadana</span>
+                  </>
+                )}
               </div>
               <h1 className={`text-2xl md:text-3xl font-bold text-white mb-1 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                {getGreeting()}, Bienvenido 👋
+                {getGreeting()}, {user?.name || (isAdmin ? "Administrador" : "Bienvenido")} 👋
               </h1>
               <p className={`text-white/70 text-sm md:text-base transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                Seleccione el trámite o servicio municipal que desea gestionar en línea.
+                {isAdmin 
+                  ? "Panel de administración municipal: dispone de acceso activo a todos los módulos y trámites del sistema."
+                  : "Seleccione el trámite o servicio municipal que desea gestionar en línea."}
               </p>
             </div>
           </div>
@@ -196,8 +265,8 @@ export default function HomePage() {
 
         {/* Grid with animated cards */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {listaTramites.map((tramite, index) => (
-            <AnimatedCard key={tramite.id} delay={index * 0.06}>
+          {tramitesFiltrados.map((tramite, index) => (
+            <AnimatedCard key={tramite.id} delay={index * 0.05}>
               <TramiteCard
                 id={tramite.id}
                 titulo={tramite.titulo}
@@ -205,8 +274,9 @@ export default function HomePage() {
                 categoria={tramite.categoria}
                 estado={tramite.estado}
                 estadoColor={tramite.estadoColor}
+                disponible={tramite.disponible}
                 imagen={tramite.imagen}
-                alSeleccionar={() => manejarTramite(tramite.id)}
+                alSeleccionar={() => manejarTramite(tramite.id, tramite.disponible)}
               />
             </AnimatedCard>
           ))}
